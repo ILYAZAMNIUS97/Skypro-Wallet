@@ -1,154 +1,200 @@
 import styled from "styled-components";
 
-export const PageWrapper = styled.div`
-  width: 100%;
+export const LoginContainer = styled.div`
+  position: relative;
+  width: 100vw;
   height: 100vh;
-  overflow: hidden;
-  background-color: ${({ theme }) => theme.colors.background};
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
 `;
 
-export const AuthContainer = styled.div`
+export const LoginBackground = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
+  background-color: #f4f5f6;
+  z-index: 0;
+`;
+
+export const Header = styled.header`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 64px;
+  background-color: #ffffff;
+  z-index: 2;
   display: flex;
   align-items: center;
-  justify-content: center;
 `;
 
-export const AuthModal = styled.div`
-  width: 368px;
-  height: auto;
-  background-color: ${({ theme }) => theme.colors.modalBackground};
-  border-radius: 10px;
-  border: 0.7px solid ${({ theme }) => theme.colors.inputBorder};
-  box-shadow: 0px 4px 67px -12px ${({ theme }) => theme.colors.shadow};
-  padding: 40px 30px;
+export const LogoSection = styled.div`
+  margin-left: 120px;
 `;
 
-export const AuthBlock = styled.div`
+export const LogoImage = styled.img`
+  width: 143.68px;
+  height: 19px;
+`;
+
+export const LoginForm = styled.form`
+  position: relative;
+  width: 379px;
+  background: #ffffff;
+  border-radius: 30px;
+  box-shadow: 0px 20px 67px -12px rgba(0, 0, 0, 0.13);
+  padding: 32px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  gap: 24px;
+  z-index: 1;
+  box-sizing: border-box;
 `;
 
-export const AuthTitle = styled.div`
-  text-align: center;
-  font-size: 20px;
+export const LoginHeader = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+`;
+
+export const LoginTitle = styled.h1`
+  font-family: "Montserrat", sans-serif;
   font-weight: 700;
-  line-height: 30px;
-  letter-spacing: -0.6px;
-  margin-bottom: 20px;
-
-  h2 {
-    color: ${({ theme }) => theme.colors.textPrimary};
-  }
+  font-size: 24px;
+  line-height: 1.219em;
+  text-align: center;
+  color: #000000;
+  margin: 0;
 `;
 
-export const AuthForm = styled.form`
-  width: 100%;
+export const FormFields = styled.div`
   display: flex;
   flex-direction: column;
-`;
-
-export const AuthFormGroup = styled.div`
-  margin-bottom: 7px;
-`;
-
-export const AuthFormGroup2 = styled.div`
+  gap: 12px;
   width: 100%;
+`;
+
+export const InputField = styled.div`
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
+  gap: 12px;
+  padding: 12px;
+  border: 0.5px solid #999999;
+  border-radius: 6px;
+  box-sizing: border-box;
+  width: 100%;
 `;
 
-export const AuthInput = styled.input`
-  width: 100%;
-  min-width: 100%;
-  border-radius: 8px;
-  border: 0.7px solid
-    ${(props) => (props.$hasError ? "#ff6b6b" : props.theme.colors.inputBorder)};
-  outline: none;
-  padding: 10px 8px;
-  font-size: 14px;
-  line-height: 1;
-  letter-spacing: -0.14px;
-  background-color: ${({ theme }) => theme.colors.inputBackground};
-  color: ${({ theme }) => theme.colors.textPrimary};
-
-  &::placeholder {
-    font-weight: 400;
-    font-size: 14px;
-    line-height: 21px;
-    letter-spacing: -0.14px;
-    color: ${({ theme }) => theme.colors.placeholder};
-  }
-
-  &:focus {
-    border-color: ${(props) =>
-      props.$hasError ? "#ff6b6b" : props.theme.colors.textSecondary};
-  }
-`;
-
-export const AuthButton = styled.button`
-  width: 100%;
-  height: 30px;
-  background-color: ${({ theme }) => theme.colors.button};
-  border-radius: 4px;
+export const Input = styled.input`
+  flex: 1;
   border: none;
   outline: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
-  line-height: 1;
-  font-weight: 500;
-  letter-spacing: -0.14px;
-  color: #ffffff;
-  margin: 20px 0;
-  cursor: pointer;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 1.219em;
+  color: #000000;
+  background: transparent;
 
-  &:hover {
-    background-color: ${({ theme }) => theme.colors.buttonHover};
+  &::placeholder {
+    color: #999999;
   }
 
   &:disabled {
-    background-color: ${({ theme }) => theme.colors.buttonSecondary};
+    opacity: 0.6;
+  }
+`;
+
+export const SubmitButton = styled.button`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: #7334ea;
+  border: none;
+  border-radius: 6px;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 1.219em;
+  text-align: center;
+  color: #ffffff;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  box-sizing: border-box;
+  width: 100%;
+
+  &:hover:not(:disabled) {
+    background: #5f2bc4;
+  }
+
+  &:disabled {
+    opacity: 0.6;
     cursor: not-allowed;
   }
 `;
 
-export const ErrorMessage = styled.div`
-  color: #ff6b6b;
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 18px;
-  margin-top: 4px;
-  margin-left: 8px;
+export const RegisterSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
 `;
 
-export const HelpText = styled.div`
-  color: ${({ theme }) => theme.colors.textSecondary};
-  font-size: 12px;
+export const RegisterText = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  font-family: "Montserrat", sans-serif;
   font-weight: 400;
-  line-height: 18px;
-  margin-top: 4px;
-  margin-left: 8px;
+  font-size: 12px;
+  line-height: 1.5em;
+  text-align: center;
+  color: #999999;
 `;
 
-export const AuthFormP = styled.p`
-  color: ${({ theme }) => theme.colors.textSecondary};
-  font-size: 14px;
+export const RegisterLink = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  font-family: "Montserrat", sans-serif;
   font-weight: 400;
-  line-height: 150%;
-  letter-spacing: -0.14px;
+  font-size: 12px;
+  line-height: 1.5em;
+  text-align: center;
+  color: #999999;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.2s ease;
 
-  a {
-    text-decoration: underline;
-    color: ${({ theme }) => theme.colors.button};
+  &:hover {
+    color: #7334ea;
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: -2px;
+    left: 50%;
+    transform: translateX(-50%);
+    height: 1px;
+    background: #999999;
+    width: 149px;
+  }
+
+  &:hover::after {
+    background: #7334ea;
   }
 `;

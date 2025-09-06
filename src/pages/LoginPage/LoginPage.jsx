@@ -1,190 +1,122 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
-import { generalNotifications } from "../../services/toastNotifications";
+import { authApi } from "../../services/api";
 import {
-  PageWrapper,
-  AuthContainer,
-  AuthModal,
-  AuthBlock,
-  AuthTitle,
-  AuthForm,
-  AuthFormGroup,
-  AuthInput,
-  AuthButton,
-  AuthFormGroup2,
-  AuthFormP,
-  ErrorMessage,
-  HelpText,
+  authNotifications,
+  generalNotifications,
+} from "../../services/toastNotifications";
+import {
+  LoginContainer,
+  LoginBackground,
+  Header,
+  LogoSection,
+  LogoImage,
+  LoginForm,
+  LoginHeader,
+  LoginTitle,
+  FormFields,
+  InputField,
+  Input,
+  SubmitButton,
+  RegisterSection,
+  RegisterText,
+  RegisterLink,
 } from "./LoginPage.styled";
 
-function LoginPage() {
-  const { login: authLogin } = useAuth();
-  const [login, setLogin] = useState("");
-  const [password, setPassword] = useState("");
+const LoginPage = () => {
+  const [formData, setFormData] = useState({
+    login: "",
+    password: "",
+  });
   const [isLoading, setIsLoading] = useState(false);
-  const [errors, setErrors] = useState({});
-  const [authError, setAuthError] = useState("");
+
+  const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleLoginChange = (e) => {
-    const newLogin = e.target.value;
-    setLogin(newLogin);
-
-    // Валидация в реальном времени
-    const newErrors = { ...errors };
-
-    if (!newLogin.trim()) {
-      newErrors.login = "Поле логин обязательно для заполнения";
-    } else {
-      delete newErrors.login;
-    }
-
-    setErrors(newErrors);
-
-    // Очищаем ошибку аутентификации
-    if (authError) {
-      setAuthError("");
-    }
-  };
-
-  const handlePasswordChange = (e) => {
-    const newPassword = e.target.value;
-    setPassword(newPassword);
-
-    // Валидация в реальном времени
-    const newErrors = { ...errors };
-
-    if (!newPassword.trim()) {
-      newErrors.password = "Поле пароль обязательно для заполнения";
-    } else {
-      delete newErrors.password;
-    }
-
-    setErrors(newErrors);
-
-    // Очищаем ошибку аутентификации
-    if (authError) {
-      setAuthError("");
-    }
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Принудительная валидация при отправке формы
-    const newErrors = {};
-
-    if (!login.trim()) {
-      newErrors.login = "Поле логин обязательно для заполнения";
-    }
-
-    if (!password.trim()) {
-      newErrors.password = "Поле пароль обязательно для заполнения";
-    }
-
-    setErrors(newErrors);
-
-    if (Object.keys(newErrors).length > 0) {
-      generalNotifications.validationError("Заполните все обязательные поля");
+    if (!formData.login || !formData.password) {
+      generalNotifications.validationError("Заполните все поля");
       return;
     }
 
     setIsLoading(true);
-    setAuthError("");
 
     try {
-      // Выполняем авторизацию через контекст
-      await authLogin({
-        login: login,
-        password: password,
-      });
-
-      // Успешная авторизация - переходим на главную страницу
+      const response = await authApi.login(formData);
+      login(response.user, response.user.token);
+      authNotifications.loginSuccess(response.user.name || response.user.login);
       navigate("/");
     } catch (error) {
-      // Обработка ошибок авторизации
-      console.error("Ошибка авторизации:", error);
-      setAuthError(
-        error.message ||
-          "Введенные вами данные не распознаны. Проверьте свой логин и пароль и повторите попытку входа."
-      );
-      setErrors({
-        login: "invalid",
-        password: "invalid",
-      });
+      authNotifications.loginError();
+      console.error("Ошибка входа:", error);
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <PageWrapper>
-      <AuthContainer>
-        <AuthModal>
-          <AuthBlock>
-            <AuthTitle>
-              <h2>Вход</h2>
-            </AuthTitle>
-            <AuthForm onSubmit={handleSubmit}>
-              <AuthFormGroup>
-                <AuthInput
-                  type="text"
-                  placeholder="Логин (используйте: admin)"
-                  value={login}
-                  onChange={handleLoginChange}
-                  $hasError={!!errors.login || !!authError}
-                  required
-                />
-                {errors.login && errors.login !== "invalid" && (
-                  <ErrorMessage>{errors.login}</ErrorMessage>
-                )}
-                {!errors.login && !authError && (
-                  <HelpText>Для демо используйте логин: admin</HelpText>
-                )}
-              </AuthFormGroup>
-              <AuthFormGroup>
-                <AuthInput
-                  type="password"
-                  placeholder="Пароль (используйте: admin)"
-                  value={password}
-                  onChange={handlePasswordChange}
-                  $hasError={!!errors.password || !!authError}
-                  required
-                />
-                {errors.password && errors.password !== "invalid" && (
-                  <ErrorMessage>{errors.password}</ErrorMessage>
-                )}
-                {!errors.password && !authError && (
-                  <HelpText>Для демо используйте пароль: admin</HelpText>
-                )}
-              </AuthFormGroup>
+    <LoginContainer>
+      <LoginBackground />
 
-              {authError && (
-                <AuthFormGroup>
-                  <ErrorMessage
-                    style={{ textAlign: "center", marginTop: "10px" }}
-                  >
-                    {authError}
-                  </ErrorMessage>
-                </AuthFormGroup>
-              )}
+      <Header>
+        <LogoSection>
+          <LogoImage src="/images/logo.svg" alt="Skypro Wallet" />
+        </LogoSection>
+      </Header>
 
-              <AuthFormGroup2>
-                <AuthButton type="submit" disabled={isLoading}>
-                  {isLoading ? "Вход..." : "Войти"}
-                </AuthButton>
-                <AuthFormP>
-                  Нужно зарегистрироваться?{" "}
-                  <Link to="/register">Регистрируйтесь здесь</Link>
-                </AuthFormP>
-              </AuthFormGroup2>
-            </AuthForm>
-          </AuthBlock>
-        </AuthModal>
-      </AuthContainer>
-    </PageWrapper>
+      <LoginForm onSubmit={handleSubmit}>
+        <LoginHeader>
+          <LoginTitle>Вход</LoginTitle>
+        </LoginHeader>
+
+        <FormFields>
+          <InputField>
+            <Input
+              type="text"
+              name="login"
+              placeholder="ivanova|"
+              value={formData.login}
+              onChange={handleInputChange}
+              disabled={isLoading}
+            />
+          </InputField>
+
+          <InputField>
+            <Input
+              type="password"
+              name="password"
+              placeholder="Пароль"
+              value={formData.password}
+              onChange={handleInputChange}
+              disabled={isLoading}
+            />
+          </InputField>
+        </FormFields>
+
+        <SubmitButton type="submit" disabled={isLoading}>
+          {isLoading ? "Загрузка..." : "Войти"}
+        </SubmitButton>
+
+        <RegisterSection>
+          <RegisterText>Нужно зарегистрироваться?</RegisterText>
+          <RegisterLink as={Link} to="/register">
+            Регистрируйтесь здесь
+          </RegisterLink>
+        </RegisterSection>
+      </LoginForm>
+    </LoginContainer>
   );
-}
+};
 
 export default LoginPage;
