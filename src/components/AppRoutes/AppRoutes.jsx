@@ -2,6 +2,7 @@ import { Routes, Route } from "react-router-dom";
 import LoginPage from "../../pages/LoginPage/LoginPage";
 import RegisterPage from "../../pages/RegisterPage/RegisterPage";
 import TransactionsPage from "../../pages/TransactionsPage/TransactionsPage";
+import AnalyticsPage from "../../pages/AnalyticsPage/AnalyticsPage";
 import CardPage from "../../pages/CardPage/CardPage";
 import NewTaskPage from "../../pages/NewTaskPage/NewTaskPage";
 import ExitPage from "../../pages/ExitPage/ExitPage";
@@ -29,6 +30,14 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <TransactionsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/analytics"
+        element={
+          <ProtectedRoute>
+            <AnalyticsPage />
           </ProtectedRoute>
         }
       />

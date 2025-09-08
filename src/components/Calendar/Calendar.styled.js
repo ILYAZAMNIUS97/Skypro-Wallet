@@ -2,14 +2,22 @@ import styled from "styled-components";
 
 // Основной контейнер календаря
 export const CalendarContainer = styled.div`
-  width: 182px;
-  margin-bottom: 20px;
+  width: 379px;
+  background: #ffffff;
+  border-radius: 30px;
+  padding: 32px;
+  box-shadow: 0px 20px 67px -12px rgba(0, 0, 0, 0.13);
 `;
 
 // Заголовок календаря
-export const CalendarTitle = styled.div`
-  margin-bottom: 14px;
-  padding: 0 7px;
+export const CalendarTitle = styled.h3`
+  font-family: "Montserrat", sans-serif;
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 1.219em;
+  color: #000000;
+  margin: 0 0 32px 0;
+  text-align: center;
 `;
 
 export const CalendarText = styled.p`
@@ -24,19 +32,19 @@ export const CalendarText = styled.p`
 
 // Блок календаря
 export const CalendarBlock = styled.div`
-  display: block;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 `;
 
 // Месяц/год
 export const CalendarMonth = styled.div`
-  color: ${(props) => props.theme.colors.textSecondary};
-  font-size: 14px;
-  line-height: 25px;
+  font-family: "Montserrat", sans-serif;
   font-weight: 600;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 7px;
+  font-size: 16px;
+  line-height: 1.219em;
+  color: #000000;
+  margin-bottom: 12px;
 `;
 
 // Навигация по месяцам
@@ -55,65 +63,66 @@ export const MonthNavButton = styled.button`
 
 // Контент календаря
 export const CalendarContent = styled.div`
-  margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 `;
 
 // Названия дней недели
 export const CalendarDaysNames = styled.div`
   display: flex;
-  flex-wrap: nowrap;
+  justify-content: center;
   align-items: center;
-  justify-content: space-between;
-  margin: 7px 0;
-  padding: 0 7px;
+  gap: 6px;
+  padding: 6px 10px;
 `;
 
 export const CalendarDayName = styled.div`
-  color: ${(props) => props.theme.colors.textSecondary};
-  font-size: 10px;
-  font-weight: 500;
-  line-height: normal;
-  letter-spacing: -0.2px;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 1.219em;
+  color: #999999;
+  text-align: center;
+  width: 39.8px;
 `;
 
 // Ячейки календаря
 export const CalendarCells = styled.div`
-  width: 182px;
-  height: 126px;
   display: flex;
   flex-wrap: wrap;
+  gap: 6px;
+  justify-content: flex-start;
 `;
 
 export const CalendarCell = styled.div`
-  width: 22px;
-  height: 22px;
-  margin: 2px;
-  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  border-radius: 60px;
   display: flex;
-  flex-wrap: nowrap;
   align-items: center;
   justify-content: center;
-  font-size: 10px;
-  font-weight: 500;
-  line-height: normal;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 1.219em;
   color: ${(props) => {
-    if (props.$isToday) return "#ffffff";
-    if (props.$isOtherMonth) return props.theme.colors.textSecondary;
-    return props.theme.colors.textPrimary;
+    if (props.$isSelected) return "#7334EA";
+    if (props.$isOtherMonth) return "transparent";
+    return "#000000";
   }};
   background-color: ${(props) => {
-    if (props.$isSelected) return props.theme.colors.button;
-    if (props.$isToday) return props.theme.colors.buttonSecondary;
+    if (props.$isSelected) return "#F1EBFD";
     return "transparent";
   }};
-  cursor: ${(props) => (props.$isOtherMonth ? "default" : "pointer")};
-  opacity: ${(props) => (props.$isOtherMonth ? 0.3 : 1)};
+  cursor: pointer;
+  opacity: ${(props) => (props.$isOtherMonth ? 0 : 1)};
 
   &:hover {
     background-color: ${(props) => {
       if (props.$isOtherMonth) return "transparent";
-      if (props.$isSelected) return props.theme.colors.buttonHover;
-      return props.theme.colors.border;
+      if (props.$isSelected) return "#F1EBFD";
+      return "#f5f5f5";
     }};
   }
 `;

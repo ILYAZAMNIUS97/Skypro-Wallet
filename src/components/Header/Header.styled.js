@@ -58,7 +58,7 @@ export const NavLink = styled.a`
     position: absolute;
     bottom: 0;
     left: 0;
-    width: 100px;
+    width: 100%;
     height: 1px;
     background: #7334ea;
     opacity: ${(props) => (props.$isActive ? "1" : "0")};
@@ -67,6 +67,7 @@ export const NavLink = styled.a`
 
   &:hover {
     color: #7334ea;
+    font-weight: 600;
   }
 `;
 
