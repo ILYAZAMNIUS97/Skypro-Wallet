@@ -85,10 +85,40 @@ export const InputField = styled.div`
   align-items: center;
   gap: 12px;
   padding: 12px;
-  border: 0.5px solid #999999;
+  border: 0.5px solid;
   border-radius: 6px;
   box-sizing: border-box;
   width: 100%;
+
+  /* Состояние по умолчанию */
+  border-color: #999999;
+  background: transparent;
+
+  /* Состояние успеха - светло-фиолетовый фон с темно-фиолетовой обводкой */
+  ${(props) =>
+    props.$isValid &&
+    !props.$hasError &&
+    `
+    background: #F1EBFD;
+    border-color: #7334EA;
+  `}
+
+  /* Состояние ошибки - светло-красный фон с темно-красной обводкой */
+  ${(props) =>
+    props.$hasError &&
+    `
+    background: #FFEBEB;
+    border-color: #F25050;
+  `}
+  
+  /* Звездочка для ошибок */
+  span {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    line-height: 1.219em;
+    color: #f25050;
+  }
 `;
 
 export const Input = styled.input`
@@ -117,7 +147,6 @@ export const SubmitButton = styled.button`
   align-items: center;
   gap: 12px;
   padding: 12px;
-  background: #7334ea;
   border: none;
   border-radius: 6px;
   font-family: "Montserrat", sans-serif;
@@ -125,15 +154,31 @@ export const SubmitButton = styled.button`
   font-size: 12px;
   line-height: 1.219em;
   text-align: center;
-  color: #ffffff;
   cursor: pointer;
   transition: background-color 0.2s ease;
   box-sizing: border-box;
   width: 100%;
 
+  /* Активное состояние - фиолетовый фон с белым текстом */
+  background: #7334ea;
+  color: #ffffff;
+
   &:hover:not(:disabled) {
     background: #5f2bc4;
   }
+
+  /* Неактивное состояние - серый фон с белым текстом */
+  ${(props) =>
+    props.$isDisabled &&
+    `
+    background: #999999;
+    color: #ffffff;
+    cursor: not-allowed;
+    
+    &:hover {
+      background: #999999;
+    }
+  `}
 
   &:disabled {
     opacity: 0.6;
@@ -200,17 +245,14 @@ export const RegisterLink = styled.div`
 `;
 
 export const ErrorMessage = styled.div`
-  width: 100%;
+  width: 312px;
   font-family: "Montserrat", sans-serif;
   font-weight: 400;
   font-size: 12px;
-  line-height: 1.5em;
+  font-style: normal;
+  line-height: 150%;
   text-align: center;
   color: #f84d4d;
-  background: #ffebeb;
-  border: 1px solid #f25050;
-  border-radius: 6px;
-  padding: 12px;
-  margin-top: 12px;
+  margin-top: 4px;
   box-sizing: border-box;
 `;
