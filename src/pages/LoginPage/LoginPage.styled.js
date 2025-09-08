@@ -191,10 +191,26 @@ export const RegisterLink = styled.div`
     transform: translateX(-50%);
     height: 1px;
     background: #999999;
-    width: 149px;
+    width: 146px;
   }
 
   &:hover::after {
     background: #7334ea;
   }
+`;
+
+export const ErrorMessage = styled.div`
+  width: 100%;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 1.5em;
+  text-align: center;
+  color: #f84d4d;
+  background: #ffebeb;
+  border: 1px solid #f25050;
+  border-radius: 6px;
+  padding: 12px;
+  margin-top: 12px;
+  box-sizing: border-box;
 `;

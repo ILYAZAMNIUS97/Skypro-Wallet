@@ -1,11 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
-import { authApi } from "../../services/api";
-import {
-  authNotifications,
-  generalNotifications,
-} from "../../services/toastNotifications";
 import {
   LoginContainer,
   LoginBackground,
@@ -22,6 +17,7 @@ import {
   RegisterSection,
   RegisterText,
   RegisterLink,
+  ErrorMessage,
 } from "./LoginPage.styled";
 
 const LoginPage = () => {
@@ -30,6 +26,7 @@ const LoginPage = () => {
     password: "",
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [loginError, setLoginError] = useState("");
 
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -40,26 +37,32 @@ const LoginPage = () => {
       ...prev,
       [name]: value,
     }));
+
+    // Очистить ошибку при вводе
+    if (loginError) {
+      setLoginError("");
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!formData.login || !formData.password) {
-      generalNotifications.validationError("Заполните все поля");
+      setLoginError("Заполните все поля");
       return;
     }
 
     setIsLoading(true);
+    setLoginError("");
 
     try {
-      const response = await authApi.login(formData);
-      login(response.user, response.user.token);
-      authNotifications.loginSuccess(response.user.name || response.user.login);
+      await login(formData);
       navigate("/");
     } catch (error) {
-      authNotifications.loginError();
       console.error("Ошибка входа:", error);
+      setLoginError(
+        "Неверный email или пароль. Проверьте данные и попробуйте снова."
+      );
     } finally {
       setIsLoading(false);
     }
@@ -85,7 +88,7 @@ const LoginPage = () => {
             <Input
               type="text"
               name="login"
-              placeholder="ivanova|"
+              placeholder="ivanovaeva@mail.ru"
               value={formData.login}
               onChange={handleInputChange}
               disabled={isLoading}
@@ -102,6 +105,8 @@ const LoginPage = () => {
               disabled={isLoading}
             />
           </InputField>
+
+          {loginError && <ErrorMessage>{loginError}</ErrorMessage>}
         </FormFields>
 
         <SubmitButton type="submit" disabled={isLoading}>
