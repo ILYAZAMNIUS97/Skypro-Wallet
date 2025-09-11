@@ -12,12 +12,16 @@ import {
 } from "./ExpenseForm.styled";
 
 const categories = [
-  { id: "food", name: "Еда", icon: "🛒" },
-  { id: "transport", name: "Транспорт", icon: "🚗" },
-  { id: "housing", name: "Жилье", icon: "🏠" },
-  { id: "entertainment", name: "Развлечения", icon: "🎮" },
-  { id: "education", name: "Образование", icon: "🎓" },
-  { id: "other", name: "Другое", icon: "💬" },
+  { id: "food", name: "Еда", icon: "/images/icons/bag-2.svg" },
+  { id: "transport", name: "Транспорт", icon: "/images/icons/car.svg" },
+  { id: "housing", name: "Жилье", icon: "/images/icons/house.svg" },
+  {
+    id: "entertainment",
+    name: "Развлечения",
+    icon: "/images/icons/gameboy.svg",
+  },
+  { id: "education", name: "Образование", icon: "/images/icons/teacher.svg" },
+  { id: "other", name: "Другое", icon: "/images/icons/message-text.svg" },
 ];
 
 const ExpenseForm = () => {
@@ -75,7 +79,7 @@ const ExpenseForm = () => {
                 $isSelected={formData.category === category.id}
                 onClick={() => handleCategorySelect(category.id)}
               >
-                <CategoryIcon>{category.icon}</CategoryIcon>
+                <CategoryIcon src={category.icon} alt={category.name} />
                 {category.name}
               </CategoryButton>
             ))}

@@ -64,8 +64,8 @@ export const CategoryButton = styled.button`
   align-items: center;
   gap: 10px;
   padding: 8px 20px;
-  background: ${(props) => (props.$isSelected ? "#7334ea" : "#f4f5f6")};
-  color: ${(props) => (props.$isSelected ? "#ffffff" : "#000000")};
+  background: ${(props) => (props.$isSelected ? "#F1EBFD" : "#f4f5f6")};
+  color: ${(props) => (props.$isSelected ? "#7334EA" : "#000000")};
   border: none;
   border-radius: 30px;
   font-family: "Montserrat", sans-serif;
@@ -76,17 +76,23 @@ export const CategoryButton = styled.button`
   transition: all 0.2s ease;
 
   &:hover {
-    background: ${(props) => (props.$isSelected ? "#7334ea" : "#e0e0e0")};
+    background: ${(props) => (props.$isSelected ? "#F1EBFD" : "#e0e0e0")};
+  }
+
+  img {
+    filter: ${(props) =>
+      props.$isSelected
+        ? "brightness(0) saturate(100%) invert(31%) sepia(85%) saturate(3438%) hue-rotate(253deg) brightness(97%) contrast(94%)"
+        : "none"};
   }
 `;
 
-export const CategoryIcon = styled.span`
+export const CategoryIcon = styled.img`
   width: 14px;
   height: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
+  object-fit: contain;
+  flex-shrink: 0;
+  transition: filter 0.2s ease;
 `;
 
 export const SubmitButton = styled.button`
