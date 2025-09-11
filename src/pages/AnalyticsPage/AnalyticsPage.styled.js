@@ -10,7 +10,7 @@ export const PageContainer = styled.div`
 
 export const MainContent = styled.main`
   flex: 1;
-  padding: 100px 120px 120px;
+  padding: 36px 120px 0;
 `;
 
 export const PageTitle = styled.h1`
@@ -19,7 +19,7 @@ export const PageTitle = styled.h1`
   font-size: 32px;
   line-height: 1.5em;
   color: #000000;
-  margin: 0 0 80px 0;
+  margin: 0 0 32px 0;
 `;
 
 export const ContentWrapper = styled.div`
