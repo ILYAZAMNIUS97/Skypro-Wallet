@@ -84,6 +84,12 @@ export const DeleteButton = styled.button`
   }
 `;
 
+export const DeleteIcon = styled.img`
+  width: 12px;
+  height: 12px;
+  object-fit: contain;
+`;
+
 export const ScrollIndicator = styled.div`
   position: absolute;
   right: 6px;

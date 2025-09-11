@@ -9,6 +9,7 @@ import {
   TableCell,
   DeleteButton,
   ScrollIndicator,
+  DeleteIcon,
 } from "./ExpenseTable.styled";
 
 const ExpenseTable = ({ expenses }) => {
@@ -32,7 +33,9 @@ const ExpenseTable = ({ expenses }) => {
             <TableCell width="142px">{expense.date}</TableCell>
             <TableCell width="158px">{expense.amount}</TableCell>
             <TableCell width="50px">
-              <DeleteButton>🗑</DeleteButton>
+              <DeleteButton>
+                <DeleteIcon src="/images/icons/basket.svg" alt="Удалить" />
+              </DeleteButton>
             </TableCell>
           </TableRow>
         ))}
