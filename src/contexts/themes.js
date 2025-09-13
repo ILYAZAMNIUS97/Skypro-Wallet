@@ -1,66 +1,41 @@
 // Определение цветовых схем
 export const lightTheme = {
-  colors: {
-    // Основные цвета фона
-    background: "#EAEEF6",
-    cardBackground: "#FFFFFF",
-    modalBackground: "#FFFFFF",
+  // Основные цвета
+  background: "#EAEEF6",
+  surface: "#FFFFFF",
+  primary: "#565EEF",
+  text: "#000000",
+  textSecondary: "#94A6BE",
 
-    // Цвета текста
-    textPrimary: "#000000",
-    textSecondary: "#94A6BE",
-    textMuted: "#565EEF",
+  // Цвета состояний
+  success: "#06D6A0",
+  warning: "#FFD23F",
+  error: "#FF4757",
 
-    // Цвета интерфейса
-    border: "rgba(148, 166, 190, 0.4)",
-    shadow: "rgba(26, 56, 101, 0.21)",
-
-    // Цвета кнопок и элементов
-    button: "#565EEF",
-    buttonHover: "#33399B",
-    buttonSecondary: "#94A6BE",
-
-    // Цвета категорий (остаются неизменными)
-    webDesign: "#FF6D00",
-    research: "#20B2AA",
-    copywriting: "#A020F0",
-
-    // Цвета для инпутов
-    inputBackground: "#FFFFFF",
-    inputBorder: "#D4DBE5",
-    placeholder: "#94A6BE",
-  },
+  // Границы и тени
+  border: "#D4DBE5",
+  shadow: "rgba(148, 166, 190, 0.4)",
 };
 
 export const darkTheme = {
-  colors: {
-    // Основные цвета фона
-    background: "#151419",
-    cardBackground: "#20202C",
-    modalBackground: "#20202C",
+  // Основные цвета
+  background: "#151419",
+  surface: "#20202C",
+  primary: "#565EEF",
+  text: "#FFFFFF",
+  textSecondary: "#94A6BE",
 
-    // Цвета текста
-    textPrimary: "#FFFFFF",
-    textSecondary: "#94A6BE",
-    textMuted: "#565EEF",
+  // Цвета состояний
+  success: "#06D6A0",
+  warning: "#FFD23F",
+  error: "#FF4757",
 
-    // Цвета интерфейса
-    border: "rgba(148, 166, 190, 0.2)",
-    shadow: "rgba(0, 0, 0, 0.3)",
+  // Границы и тени
+  border: "#4A4A4A",
+  shadow: "rgba(0, 0, 0, 0.3)",
+};
 
-    // Цвета кнопок и элементов
-    button: "#565EEF",
-    buttonHover: "#33399B",
-    buttonSecondary: "#94A6BE",
-
-    // Цвета категорий (остаются неизменными)
-    webDesign: "#FF6D00",
-    research: "#20B2AA",
-    copywriting: "#A020F0",
-
-    // Цвета для инпутов
-    inputBackground: "#20202C",
-    inputBorder: "#4C4C4C",
-    placeholder: "#94A6BE",
-  },
+export const themes = {
+  light: lightTheme,
+  dark: darkTheme,
 };

@@ -1,7 +1,7 @@
 import { toast } from "react-toastify";
 
 /**
- * Утилиты для показа уведомлений в канбан-доске
+ * Утилиты для показа уведомлений в приложении Skypro Wallet
  */
 
 // Настройки по умолчанию для всех уведомлений
@@ -15,36 +15,16 @@ const defaultOptions = {
   progress: undefined,
 };
 
-// Уведомления для задач
-export const taskNotifications = {
-  created: (taskTitle) =>
-    toast.success(`Задача "${taskTitle}" создана успешно!`, defaultOptions),
-
-  updated: (taskTitle) =>
-    toast.success(`Задача "${taskTitle}" обновлена!`, defaultOptions),
-
-  deleted: (taskTitle) =>
-    toast.success(`Задача "${taskTitle}" удалена!`, defaultOptions),
-
-  statusChanged: (taskTitle, newStatus) =>
-    toast.info(
-      `Задача "${taskTitle}" перемещена в "${newStatus}"`,
-      defaultOptions
-    ),
-
-  loadError: () => toast.error("Ошибка при загрузке задач", defaultOptions),
-
-  saveError: () => toast.error("Ошибка при сохранении задачи", defaultOptions),
-
-  deleteError: () => toast.error("Ошибка при удалении задачи", defaultOptions),
-};
-
 // Уведомления для аутентификации
 export const authNotifications = {
   loginSuccess: (username) =>
-    toast.success(`Добро пожаловать, ${username}!`, defaultOptions),
+    toast.success(
+      `Добро пожаловать${username ? `, ${username}` : ""}!`,
+      defaultOptions
+    ),
 
-  loginError: () => toast.error("Неверные данные для входа", defaultOptions),
+  loginError: (message) =>
+    toast.error(message || "Неверные данные для входа", defaultOptions),
 
   registerSuccess: () =>
     toast.success("Регистрация прошла успешно!", defaultOptions),
@@ -62,6 +42,40 @@ export const authNotifications = {
     }),
 
   unauthorized: () => toast.error("Доступ запрещен", defaultOptions),
+
+  updateSuccess: () => toast.success("Профиль обновлен", defaultOptions),
+
+  updateError: () =>
+    toast.error("Ошибка при обновлении профиля", defaultOptions),
+
+  passwordChanged: () => toast.success("Пароль изменен", defaultOptions),
+
+  passwordError: () => toast.error("Ошибка при смене пароля", defaultOptions),
+};
+
+// Уведомления для финансовых операций
+export const financeNotifications = {
+  transactionCreated: (amount) =>
+    toast.success(`Транзакция на ${amount} ₽ добавлена!`, defaultOptions),
+
+  transactionUpdated: () =>
+    toast.success("Транзакция обновлена!", defaultOptions),
+
+  transactionDeleted: () =>
+    toast.success("Транзакция удалена!", defaultOptions),
+
+  loadError: () => toast.error("Ошибка при загрузке данных", defaultOptions),
+
+  saveError: () => toast.error("Ошибка при сохранении", defaultOptions),
+
+  deleteError: () => toast.error("Ошибка при удалении", defaultOptions),
+
+  invalidAmount: () =>
+    toast.warning("Укажите корректную сумму", defaultOptions),
+
+  invalidDate: () => toast.warning("Укажите корректную дату", defaultOptions),
+
+  categoryRequired: () => toast.warning("Выберите категорию", defaultOptions),
 };
 
 // Общие уведомления
@@ -88,24 +102,4 @@ export const generalNotifications = {
     }),
 
   dismiss: () => toast.dismiss(),
-};
-
-// Кастомные уведомления для специфичных случаев канбан-доски
-export const kanbanNotifications = {
-  columnEmpty: (columnName) =>
-    toast.info(`Колонка "${columnName}" пуста`, defaultOptions),
-
-  maxTasksReached: () =>
-    toast.warning("Достигнуто максимальное количество задач", defaultOptions),
-
-  duplicateTaskTitle: () =>
-    toast.warning("Задача с таким названием уже существует", defaultOptions),
-
-  dateInPast: () => toast.warning("Выбрана дата в прошлом", defaultOptions),
-
-  autoSaved: () =>
-    toast.success("Изменения автоматически сохранены", {
-      ...defaultOptions,
-      autoClose: 1500,
-    }),
 };
