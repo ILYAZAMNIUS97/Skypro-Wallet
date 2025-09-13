@@ -52,6 +52,27 @@ export const Input = styled.input`
   }
 `;
 
+export const AmountInputContainer = styled.div`
+  position: relative;
+  display: flex;
+  align-items: center;
+`;
+
+export const AmountInput = styled(Input)`
+  padding-right: 40px;
+`;
+
+export const CurrencyLabel = styled.span`
+  position: absolute;
+  right: 12px;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 1.219em;
+  color: #999999;
+  pointer-events: none;
+`;
+
 export const CategoriesContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
