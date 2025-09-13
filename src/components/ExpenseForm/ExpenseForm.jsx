@@ -8,6 +8,7 @@ import {
   AmountInputContainer,
   AmountInput,
   CurrencyLabel,
+  DateInput,
   CategoriesContainer,
   CategoryButton,
   CategoryIcon,
@@ -106,12 +107,13 @@ const ExpenseForm = () => {
 
         <FormField>
           <FieldLabel>Дата</FieldLabel>
-          <Input
+          <DateInput
             type="date"
             name="date"
             placeholder="Введите дату"
             value={formData.date}
             onChange={handleInputChange}
+            $hasValue={!!formData.date}
           />
         </FormField>
 
