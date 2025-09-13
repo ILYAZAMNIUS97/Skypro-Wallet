@@ -71,9 +71,12 @@ export const AuthProvider = ({ children }) => {
     try {
       setIsLoading(true);
       const response = await authApi.register(userData);
+
+      // Проверяем токен после регистрации
+      const isAuthenticated = authApi.isAuthenticated();
       const currentUser = authApi.getCurrentUser();
 
-      setIsAuth(true);
+      setIsAuth(isAuthenticated);
       setUser(currentUser);
 
       return response;

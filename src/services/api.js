@@ -77,12 +77,11 @@ export const authApi = {
 
       const data = await response.json();
 
-      if (data.access_token) {
-        localStorage.setItem("authToken", data.access_token);
-        // Сохраняем данные пользователя если они есть
-        if (data.user) {
-          authApi.setCurrentUser(data.user);
-        }
+      // API возвращает токен в user.token, а не access_token
+      if (data.user && data.user.token) {
+        localStorage.setItem("authToken", data.user.token);
+        // Сохраняем данные пользователя
+        authApi.setCurrentUser(data.user);
         authNotifications.loginSuccess();
         return data;
       } else {
@@ -96,18 +95,25 @@ export const authApi = {
 
   /**
    * Регистрация пользователя
-   * @param {Object} userData - Данные пользователя (name, login, password)
+   * @param {Object} userData - Данные пользователя (name, email, password)
    * @returns {Promise} Результат регистрации
    */
   register: async (userData) => {
     try {
+      // Преобразуем email в login для API
+      const apiData = {
+        name: userData.name,
+        login: userData.email, // API ожидает login, а не email
+        password: userData.password,
+      };
+
       // Используем fetch для регистрации
       const response = await fetch(`${API_BASE_URL}/api/user`, {
         method: "POST",
         headers: {
           "Content-Type": "text/plain",
         },
-        body: JSON.stringify(userData),
+        body: JSON.stringify(apiData),
       });
 
       if (!response.ok) {
@@ -122,12 +128,23 @@ export const authApi = {
       }
 
       const data = await response.json();
-      // Сохраняем данные пользователя если они есть
-      if (data.user) {
+
+      // API возвращает токен в user.token при регистрации
+      if (data.user && data.user.token) {
+        localStorage.setItem("authToken", data.user.token);
+        // Сохраняем данные пользователя
         authApi.setCurrentUser(data.user);
+        authNotifications.registerSuccess();
+        return data;
+      } else {
+        // Если токена нет, все равно считаем регистрацию успешной
+        // Сохраняем данные пользователя если они есть
+        if (data.user) {
+          authApi.setCurrentUser(data.user);
+        }
+        authNotifications.registerSuccess();
+        return data;
       }
-      authNotifications.registerSuccess();
-      return data;
     } catch (error) {
       authNotifications.registerError(error.message);
       throw error;
