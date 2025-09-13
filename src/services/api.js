@@ -176,7 +176,7 @@ export const authApi = {
    * Регистрация нового пользователя
    * @param {Object} userData - Данные для регистрации
    * @param {string} userData.name - Имя пользователя
-   * @param {string} userData.login - Email пользователя
+   * @param {string} userData.email - Email пользователя (будет использован как login)
    * @param {string} userData.password - Пароль пользователя
    * @returns {Promise} Ответ от сервера
    */
@@ -184,17 +184,17 @@ export const authApi = {
     // ВРЕМЕННОЕ РЕШЕНИЕ: Mock регистрация пока нет документации для auth endpoints
 
     // Проверяем, что пользователь с таким логином не существует
-    if (userStorage.userExists(userData.login) || userData.login === "admin") {
+    if (userStorage.userExists(userData.email) || userData.email === "admin") {
       authNotifications.registerError(
-        "Пользователь с таким логином уже существует"
+        "Пользователь с таким email уже существует"
       );
-      throw new Error("Пользователь с таким логином уже существует");
+      throw new Error("Пользователь с таким email уже существует");
     }
 
     const mockUser = {
       id: Date.now(),
       name: userData.name,
-      login: userData.login,
+      login: userData.email, // Используем email как login
       password: userData.password, // В реальном приложении пароль должен быть захеширован
       token: API_TOKEN,
     };

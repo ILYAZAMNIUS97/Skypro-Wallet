@@ -1,269 +1,284 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
-import { generalNotifications } from "../../services/toastNotifications";
 import {
-  PageWrapper,
-  AuthContainer,
-  AuthModal,
-  AuthBlock,
-  AuthTitle,
-  AuthForm,
-  AuthFormGroup,
-  AuthInput,
-  AuthButton,
-  AuthFormGroup2,
-  AuthFormP,
+  RegisterContainer,
+  RegisterBackground,
+  Header,
+  LogoSection,
+  LogoImage,
+  RegisterForm,
+  RegisterHeader,
+  RegisterTitle,
+  FormFields,
+  InputField,
+  Input,
+  SubmitButton,
+  LoginSection,
+  LoginText,
+  LoginLink,
   ErrorMessage,
-  HelpText,
+  FieldRequirements,
 } from "./RegisterPage.styled";
 
-function RegisterPage() {
-  const { register: authRegister } = useAuth();
-  const [login, setLogin] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [name, setName] = useState("");
+const RegisterPage = () => {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
   const [isLoading, setIsLoading] = useState(false);
-  const [errors, setErrors] = useState({});
-  const [authError, setAuthError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState({
+    name: false,
+    email: false,
+    password: false,
+  });
+  const [fieldValid, setFieldValid] = useState({
+    name: false,
+    email: false,
+    password: false,
+  });
+  const [showError, setShowError] = useState(false);
+  const [touched, setTouched] = useState({
+    name: false,
+    email: false,
+    password: false,
+  });
+
+  const { register } = useAuth();
   const navigate = useNavigate();
 
-  // Функция для валидации логина
-  const validateLogin = (login) => {
-    return login.trim().length >= 3; // Минимум 3 символа для логина
+  // Функции валидации
+  const validateName = (name) => {
+    return name.trim().length >= 2 && name.trim().split(" ").length >= 2;
   };
 
-  // Функция для валидации формы
-  const validateForm = () => {
-    const newErrors = {};
-
-    if (!name.trim()) {
-      newErrors.name = "Поле имя обязательно для заполнения";
-    }
-
-    if (!login.trim()) {
-      newErrors.login = "Поле логин обязательно для заполнения";
-    } else if (!validateLogin(login)) {
-      newErrors.login = "Логин должен содержать минимум 3 символа";
-    }
-
-    if (!password.trim()) {
-      newErrors.password = "Поле пароль обязательно для заполнения";
-    } else if (password.length < 6) {
-      newErrors.password = "Пароль должен содержать минимум 6 символов";
-    }
-
-    if (!confirmPassword.trim()) {
-      newErrors.confirmPassword = "Подтвердите пароль";
-    } else if (password !== confirmPassword) {
-      newErrors.confirmPassword = "Пароли не совпадают";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
   };
 
-  // Функция для получения подсказки по полю
-  const getFieldHint = (fieldName) => {
-    switch (fieldName) {
+  const validatePassword = (password) => {
+    return password.length >= 6;
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+
+    // Валидация в реальном времени
+    let isValid = false;
+    let hasError = false;
+
+    switch (name) {
       case "name":
-        return !name.trim() ? "Введите ваше имя" : "";
-      case "login":
-        if (!login.trim()) return "Логин должен содержать минимум 3 символа";
-        if (login.trim() && !validateLogin(login))
-          return "Слишком короткий логин (нужно минимум 3 символа)";
-        return "";
+        isValid = validateName(value);
+        hasError = value.length > 0 && !isValid;
+        break;
+      case "email":
+        isValid = validateEmail(value);
+        hasError = value.length > 0 && !isValid;
+        break;
       case "password":
-        if (!password.trim())
-          return "Пароль должен содержать минимум 6 символов";
-        if (password.trim() && password.length < 6)
-          return `Пароль слишком короткий (${password.length}/6 символов)`;
-        return "";
-      case "confirmPassword":
-        if (!confirmPassword.trim()) return "Пароли должны совпадать";
-        if (confirmPassword.trim() && password !== confirmPassword)
-          return "Пароли не совпадают";
-        return "";
-      default:
-        return "";
+        isValid = validatePassword(value);
+        hasError = value.length > 0 && !isValid;
+        break;
+    }
+
+    setFieldValid((prev) => ({
+      ...prev,
+      [name]: isValid,
+    }));
+
+    setFieldErrors((prev) => ({
+      ...prev,
+      [name]: hasError,
+    }));
+
+    // Скрыть общую ошибку при вводе
+    if (showError) {
+      setShowError(false);
     }
   };
 
-  // Проверяем, валидна ли форма для активации кнопки
-  const isFormValid = () => {
-    return (
-      name.trim() &&
-      login.trim() &&
-      password.trim() &&
-      confirmPassword.trim() &&
-      validateLogin(login) &&
-      password.length >= 6 &&
-      password === confirmPassword
-    );
-  };
-
-  const handleNameChange = (e) => {
-    setName(e.target.value);
-    if (errors.name) {
-      setErrors((prev) => ({ ...prev, name: "" }));
-    }
-  };
-
-  const handleLoginChange = (e) => {
-    setLogin(e.target.value);
-    if (errors.login) {
-      setErrors((prev) => ({ ...prev, login: "" }));
-    }
-  };
-
-  const handlePasswordChange = (e) => {
-    setPassword(e.target.value);
-    if (errors.password) {
-      setErrors((prev) => ({ ...prev, password: "" }));
-    }
-    // Также проверяем совпадение паролей
-    if (errors.confirmPassword && e.target.value === confirmPassword) {
-      setErrors((prev) => ({ ...prev, confirmPassword: "" }));
-    }
-  };
-
-  const handleConfirmPasswordChange = (e) => {
-    setConfirmPassword(e.target.value);
-    if (errors.confirmPassword) {
-      setErrors((prev) => ({ ...prev, confirmPassword: "" }));
-    }
+  const handleInputBlur = (e) => {
+    const { name } = e.target;
+    setTouched((prev) => ({
+      ...prev,
+      [name]: true,
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!validateForm()) {
-      generalNotifications.validationError("Заполните все поля корректно");
+    // Отметить все поля как touched
+    setTouched({
+      name: true,
+      email: true,
+      password: true,
+    });
+
+    // Проверка всех полей
+    const nameValid = validateName(formData.name);
+    const emailValid = validateEmail(formData.email);
+    const passwordValid = validatePassword(formData.password);
+
+    const newFieldErrors = {
+      name: !nameValid,
+      email: !emailValid,
+      password: !passwordValid,
+    };
+
+    const newFieldValid = {
+      name: nameValid,
+      email: emailValid,
+      password: passwordValid,
+    };
+
+    setFieldErrors(newFieldErrors);
+    setFieldValid(newFieldValid);
+
+    // Если есть ошибки, показать сообщение
+    if (!nameValid || !emailValid || !passwordValid) {
+      setShowError(true);
+      return;
+    }
+
+    if (!formData.name || !formData.email || !formData.password) {
+      setShowError(true);
       return;
     }
 
     setIsLoading(true);
-    setAuthError("");
 
     try {
-      // Выполняем регистрацию через контекст
-      await authRegister({
-        name: name,
-        login: login,
-        password: password,
-      });
-
-      // Успешная регистрация - переходим на главную страницу
+      await register(formData);
       navigate("/");
     } catch (error) {
-      // Обработка ошибок регистрации
       console.error("Ошибка регистрации:", error);
-      setAuthError(
-        error.message || "Произошла ошибка при регистрации. Попробуйте еще раз."
-      );
+      setShowError(true);
     } finally {
       setIsLoading(false);
     }
   };
 
+  // Проверка, активна ли кнопка
+  const isFormValid =
+    fieldValid.name &&
+    fieldValid.email &&
+    fieldValid.password &&
+    formData.name &&
+    formData.email &&
+    formData.password;
+
   return (
-    <PageWrapper>
-      <AuthContainer>
-        <AuthModal>
-          <AuthBlock>
-            <AuthTitle>
-              <h2>Регистрация</h2>
-            </AuthTitle>
-            <AuthForm onSubmit={handleSubmit}>
-              <AuthFormGroup>
-                <AuthInput
-                  type="text"
-                  placeholder="Имя пользователя"
-                  value={name}
-                  onChange={handleNameChange}
-                  $hasError={!!errors.name}
-                  required
-                />
-                {errors.name && <ErrorMessage>{errors.name}</ErrorMessage>}
-                {!errors.name && getFieldHint("name") && (
-                  <HelpText>{getFieldHint("name")}</HelpText>
-                )}
-              </AuthFormGroup>
-              <AuthFormGroup>
-                <AuthInput
-                  type="text"
-                  placeholder="Логин (минимум 3 символа)"
-                  value={login}
-                  onChange={handleLoginChange}
-                  $hasError={!!errors.login}
-                  required
-                />
-                {errors.login && <ErrorMessage>{errors.login}</ErrorMessage>}
-                {!errors.login && getFieldHint("login") && (
-                  <HelpText>{getFieldHint("login")}</HelpText>
-                )}
-              </AuthFormGroup>
-              <AuthFormGroup>
-                <AuthInput
-                  type="password"
-                  placeholder="Пароль (минимум 6 символов)"
-                  value={password}
-                  onChange={handlePasswordChange}
-                  $hasError={!!errors.password}
-                  required
-                />
-                {errors.password && (
-                  <ErrorMessage>{errors.password}</ErrorMessage>
-                )}
-                {!errors.password && getFieldHint("password") && (
-                  <HelpText>{getFieldHint("password")}</HelpText>
-                )}
-              </AuthFormGroup>
-              <AuthFormGroup>
-                <AuthInput
-                  type="password"
-                  placeholder="Повторите пароль"
-                  value={confirmPassword}
-                  onChange={handleConfirmPasswordChange}
-                  $hasError={!!errors.confirmPassword}
-                  required
-                />
-                {errors.confirmPassword && (
-                  <ErrorMessage>{errors.confirmPassword}</ErrorMessage>
-                )}
-                {!errors.confirmPassword && getFieldHint("confirmPassword") && (
-                  <HelpText>{getFieldHint("confirmPassword")}</HelpText>
-                )}
-              </AuthFormGroup>
+    <RegisterContainer>
+      <RegisterBackground />
 
-              {authError && (
-                <AuthFormGroup>
-                  <ErrorMessage
-                    style={{ textAlign: "center", marginTop: "10px" }}
-                  >
-                    {authError}
-                  </ErrorMessage>
-                </AuthFormGroup>
-              )}
+      <Header>
+        <LogoSection>
+          <LogoImage src="/images/logo.svg" alt="Skypro Wallet" />
+        </LogoSection>
+      </Header>
 
-              <AuthFormGroup2>
-                <AuthButton
-                  type="submit"
-                  disabled={isLoading || !isFormValid()}
-                >
-                  {isLoading ? "Регистрация..." : "Зарегистрироваться"}
-                </AuthButton>
-                <AuthFormP>
-                  Уже есть аккаунт? <Link to="/login">Войдите здесь</Link>
-                </AuthFormP>
-              </AuthFormGroup2>
-            </AuthForm>
-          </AuthBlock>
-        </AuthModal>
-      </AuthContainer>
-    </PageWrapper>
+      <RegisterForm onSubmit={handleSubmit}>
+        <RegisterHeader>
+          <RegisterTitle>Регистрация</RegisterTitle>
+        </RegisterHeader>
+
+        <FormFields>
+          <InputField
+            $hasError={fieldErrors.name && touched.name}
+            $isValid={fieldValid.name && touched.name}
+          >
+            <Input
+              type="text"
+              name="name"
+              placeholder="Ева Иванова"
+              value={formData.name}
+              onChange={handleInputChange}
+              onBlur={handleInputBlur}
+              disabled={isLoading}
+            />
+            {fieldErrors.name && touched.name && <span>*</span>}
+          </InputField>
+          {touched.name && !fieldValid.name && (
+            <FieldRequirements>
+              Введите имя и фамилию (минимум 2 символа каждое)
+            </FieldRequirements>
+          )}
+
+          <InputField
+            $hasError={fieldErrors.email && touched.email}
+            $isValid={fieldValid.email && touched.email}
+          >
+            <Input
+              type="email"
+              name="email"
+              placeholder="ivanovaeva@mail.ru"
+              value={formData.email}
+              onChange={handleInputChange}
+              onBlur={handleInputBlur}
+              disabled={isLoading}
+            />
+            {fieldErrors.email && touched.email && <span>*</span>}
+          </InputField>
+          {touched.email && !fieldValid.email && (
+            <FieldRequirements>
+              Введите корректный email адрес
+            </FieldRequirements>
+          )}
+
+          <InputField
+            $hasError={fieldErrors.password && touched.password}
+            $isValid={fieldValid.password && touched.password}
+          >
+            <Input
+              type="password"
+              name="password"
+              placeholder="Пароль"
+              value={formData.password}
+              onChange={handleInputChange}
+              onBlur={handleInputBlur}
+              disabled={isLoading}
+            />
+            {fieldErrors.password && touched.password && <span>*</span>}
+          </InputField>
+          {touched.password && !fieldValid.password && (
+            <FieldRequirements>
+              Пароль должен содержать минимум 6 символов
+            </FieldRequirements>
+          )}
+
+          {showError && (
+            <ErrorMessage>
+              Упс! Введенные вами данные некорректны. Введите данные корректно и
+              повторите попытку.
+            </ErrorMessage>
+          )}
+        </FormFields>
+
+        <SubmitButton
+          type="submit"
+          disabled={isLoading || !isFormValid}
+          $isDisabled={!isFormValid}
+        >
+          {isLoading ? "Загрузка..." : "Зарегистрироваться"}
+        </SubmitButton>
+
+        <LoginSection>
+          <LoginText>Уже есть аккаунт?</LoginText>
+          <LoginLink as={Link} to="/login">
+            Войдите здесь
+          </LoginLink>
+        </LoginSection>
+      </RegisterForm>
+    </RegisterContainer>
   );
-}
+};
 
 export default RegisterPage;
