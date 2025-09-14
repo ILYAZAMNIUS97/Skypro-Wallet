@@ -41,11 +41,23 @@ export const TableBody = styled.div`
   overflow-y: auto;
   padding-right: 8px;
 
-  /* Скрыть стандартный скроллбар */
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+  /* Стили полосы прокрутки как в календаре */
   &::-webkit-scrollbar {
-    display: none;
+    width: 4px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 2px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 2px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
   }
 `;
 
@@ -88,43 +100,4 @@ export const DeleteIcon = styled.img`
   width: 12px;
   height: 12px;
   object-fit: contain;
-`;
-
-export const ScrollIndicator = styled.div`
-  position: absolute;
-  right: 6px;
-  top: 197px;
-  width: 6px;
-  height: 100px;
-  background-color: #d9d9d9;
-  border-radius: 30px;
-  cursor: pointer;
-
-  &:hover {
-    background-color: #c9c9c9;
-  }
-`;
-
-export const ScrollThumb = styled.div`
-  position: absolute;
-  top: ${(props) => {
-    const maxPosition = 80; // 100px - 20px (высота ползунка)
-    return Math.round(props.scrollPosition * maxPosition);
-  }}px;
-  left: 0;
-  width: 6px;
-  height: 20px;
-  background-color: #666666;
-  border-radius: 30px;
-  cursor: grab;
-  transition: background-color 0.2s ease;
-
-  &:hover {
-    background-color: #555555;
-  }
-
-  &:active {
-    cursor: grabbing;
-    background-color: #444444;
-  }
 `;
