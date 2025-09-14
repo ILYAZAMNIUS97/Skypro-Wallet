@@ -277,55 +277,18 @@ export const transactionsApi = {
    */
   getAnalytics: async (startDate, endDate) => {
     try {
-      console.log("=== НАЧАЛО АНАЛИЗА getAnalytics ===");
-      console.log("Ищем транзакции за период:", {
-        startDate: startDate.toISOString(),
-        endDate: endDate.toISOString(),
-        startDateFormatted: startDate.toLocaleDateString(),
-        endDateFormatted: endDate.toLocaleDateString(),
+      console.log("Загружаем аналитику за период:", {
+        startDate: startDate.toLocaleDateString(),
+        endDate: endDate.toLocaleDateString(),
       });
 
       // Получаем все транзакции
       const transactions = await transactionsApi.getTransactions();
-      console.log("Всего транзакций получено:", transactions.length);
-
-      if (transactions.length > 0) {
-        console.log("Пример структуры транзакции:", transactions[0]);
-        console.log("Даты транзакций:");
-        transactions.forEach((transaction, index) => {
-          if (index < 5) {
-            // Показываем первые 5 транзакций
-            const transactionDate = new Date(transaction.date);
-            console.log(
-              `  ${index + 1}. ID: ${
-                transaction._id || transaction.id
-              }, Дата: ${
-                transaction.date
-              } -> ${transactionDate.toLocaleDateString()}, Сумма: ${
-                transaction.sum || transaction.amount
-              }`
-            );
-          }
-        });
-      }
 
       // Фильтруем транзакции по периоду
       const filteredTransactions = transactions.filter((transaction) => {
         const transactionDate = new Date(transaction.date);
-        const isInRange =
-          transactionDate >= startDate && transactionDate <= endDate;
-
-        if (isInRange) {
-          console.log(
-            `✅ Транзакция ПОДХОДИТ: ${
-              transaction.date
-            } (${transactionDate.toLocaleDateString()}) - сумма: ${
-              transaction.sum || transaction.amount
-            }`
-          );
-        }
-
-        return isInRange;
+        return transactionDate >= startDate && transactionDate <= endDate;
       });
 
       console.log(
@@ -349,10 +312,6 @@ export const transactionsApi = {
           acc.categories[category].count += 1;
           acc.totalExpenses += amount;
 
-          console.log(
-            `Добавлена транзакция в категорию "${category}": ${amount} руб.`
-          );
-
           return acc;
         },
         {
@@ -370,10 +329,7 @@ export const transactionsApi = {
         (a, b) => b.amount - a.amount
       );
 
-      console.log("=== РЕЗУЛЬТАТ АНАЛИТИКИ ===");
-      console.log("Общие расходы:", analytics.totalExpenses);
-      console.log("Категории:", analytics.categoriesArray);
-      console.log("=== КОНЕЦ АНАЛИЗА ===");
+      console.log("Общие расходы:", analytics.totalExpenses, "руб.");
 
       return analytics;
     } catch (error) {

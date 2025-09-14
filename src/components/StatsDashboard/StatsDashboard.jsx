@@ -13,6 +13,25 @@ import {
   LoadingMessage,
 } from "./StatsDashboard.styled";
 
+// Маппинг категорий для отображения на русском языке
+const categoryDisplayNames = {
+  food: "Еда",
+  transport: "Транспорт",
+  housing: "Жилье",
+  joy: "Развлечения",
+  education: "Образование",
+  others: "Другое",
+};
+
+/**
+ * Получение русского названия категории по ID
+ * @param {string} categoryId - ID категории
+ * @returns {string} Русское название категории
+ */
+const getCategoryDisplayName = (categoryId) => {
+  return categoryDisplayNames[categoryId] || categoryId || "Другое";
+};
+
 const StatsDashboard = ({ analyticsData, period, isLoading }) => {
   // Цвета для категорий
   const categoryColors = [
@@ -77,7 +96,7 @@ const StatsDashboard = ({ analyticsData, period, isLoading }) => {
     const normalizedHeight =
       maxAmount > 0 ? (category.amount / maxAmount) * maxHeight : 4;
     return {
-      name: category.name,
+      name: getCategoryDisplayName(category.name), // Преобразуем английское название в русское
       amount: formatMoney(category.amount),
       color: categoryColors[index % categoryColors.length],
       height: Math.max(normalizedHeight, 4), // Минимальная высота 4px

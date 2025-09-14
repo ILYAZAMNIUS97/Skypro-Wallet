@@ -98,13 +98,6 @@ function Calendar({ onPeriodChange }) {
       const clickedDate = new Date(monthData.year, monthData.month, day);
       const newSelectedDates = [clickedDate];
 
-      console.log("=== КАЛЕНДАРЬ: Выбрана дата ===");
-      console.log("День:", day);
-      console.log("Месяц данные:", monthData);
-      console.log("Созданная дата:", clickedDate);
-      console.log("Дата ISO:", clickedDate.toISOString());
-      console.log("Дата локально:", clickedDate.toLocaleDateString());
-
       setSelectedDates(newSelectedDates);
 
       // Уведомляем родительский компонент об изменении
@@ -115,7 +108,6 @@ function Calendar({ onPeriodChange }) {
           period: formatPeriodText(newSelectedDates),
         };
 
-        console.log("Отправляем данные периода:", periodData);
         onPeriodChange(periodData);
       }
     },
