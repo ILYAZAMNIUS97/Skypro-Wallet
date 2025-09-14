@@ -98,4 +98,33 @@ export const ScrollIndicator = styled.div`
   height: 100px;
   background-color: #d9d9d9;
   border-radius: 30px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #c9c9c9;
+  }
+`;
+
+export const ScrollThumb = styled.div`
+  position: absolute;
+  top: ${(props) => {
+    const maxPosition = 80; // 100px - 20px (высота ползунка)
+    return Math.round(props.scrollPosition * maxPosition);
+  }}px;
+  left: 0;
+  width: 6px;
+  height: 20px;
+  background-color: #666666;
+  border-radius: 30px;
+  cursor: grab;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: #555555;
+  }
+
+  &:active {
+    cursor: grabbing;
+    background-color: #444444;
+  }
 `;
