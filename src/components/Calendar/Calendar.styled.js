@@ -21,12 +21,12 @@ export const CalendarTitle = styled.h3`
 `;
 
 export const CalendarText = styled.p`
-  color: ${(props) => props.theme.colors.textSecondary};
+  color: ${(props) => props.theme.textSecondary};
   font-size: 10px;
   line-height: 1;
 
   span {
-    color: ${(props) => props.theme.colors.textPrimary};
+    color: ${(props) => props.theme.text};
   }
 `;
 
@@ -51,13 +51,13 @@ export const CalendarMonth = styled.div`
 export const MonthNavButton = styled.button`
   background: none;
   border: none;
-  color: ${(props) => props.theme.colors.textSecondary};
+  color: ${(props) => props.theme.textSecondary};
   cursor: pointer;
   padding: 4px;
   font-size: 14px;
 
   &:hover {
-    color: ${(props) => props.theme.colors.textPrimary};
+    color: ${(props) => props.theme.text};
   }
 `;
 
@@ -129,7 +129,7 @@ export const CalendarCell = styled.div`
 
 // Период выполнения
 export const CalendarPeriod = styled.div`
-  color: ${(props) => props.theme.colors.textSecondary};
+  color: ${(props) => props.theme.textSecondary};
   font-size: 10px;
   line-height: 1;
   text-align: center;

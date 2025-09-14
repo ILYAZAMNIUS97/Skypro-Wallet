@@ -1,5 +1,4 @@
 import { AuthProvider } from "./AuthContext";
-import { TasksProvider } from "./TasksContext";
 import { ThemeProvider } from "./ThemeContext.jsx";
 
 /**
@@ -8,9 +7,7 @@ import { ThemeProvider } from "./ThemeContext.jsx";
 const AppProviders = ({ children }) => {
   return (
     <ThemeProvider>
-      <AuthProvider>
-        <TasksProvider>{children}</TasksProvider>
-      </AuthProvider>
+      <AuthProvider>{children}</AuthProvider>
     </ThemeProvider>
   );
 };

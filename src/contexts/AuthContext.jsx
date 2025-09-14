@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useState, useEffect } from "react";
 import { authApi } from "../services/api";
 
@@ -70,9 +71,12 @@ export const AuthProvider = ({ children }) => {
     try {
       setIsLoading(true);
       const response = await authApi.register(userData);
+
+      // Проверяем токен после регистрации
+      const isAuthenticated = authApi.isAuthenticated();
       const currentUser = authApi.getCurrentUser();
 
-      setIsAuth(true);
+      setIsAuth(isAuthenticated);
       setUser(currentUser);
 
       return response;

@@ -41,6 +41,7 @@ export const Input = styled.input`
   color: #000000;
   background: #ffffff;
   box-sizing: border-box;
+  transition: all 0.2s ease;
 
   &::placeholder {
     color: #999999;
@@ -49,7 +50,50 @@ export const Input = styled.input`
   &:focus {
     outline: none;
     border-color: #7334ea;
+    background: #f1ebfd;
   }
+`;
+
+export const AmountInputContainer = styled.div`
+  position: relative;
+  display: flex;
+  align-items: center;
+`;
+
+export const AmountInput = styled(Input)`
+  padding-right: 40px;
+`;
+
+export const CurrencyLabel = styled.span`
+  position: absolute;
+  right: 12px;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 1.219em;
+  color: #999999;
+  pointer-events: none;
+`;
+
+export const DateInput = styled(Input)`
+  /* Принудительные стили для поля даты */
+  &[type="date"] {
+    color-scheme: light;
+
+    /* Состояние фокуса */
+    &:focus {
+      background: #f1ebfd !important;
+      border-color: #7334ea !important;
+    }
+  }
+
+  /* Состояние с заполненным значением - управляется через пропс */
+  ${(props) =>
+    props.$hasValue &&
+    `
+    background: #f1ebfd !important;
+    border-color: #7334ea !important;
+  `}
 `;
 
 export const CategoriesContainer = styled.div`

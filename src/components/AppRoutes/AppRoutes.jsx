@@ -3,8 +3,6 @@ import LoginPage from "../../pages/LoginPage/LoginPage";
 import RegisterPage from "../../pages/RegisterPage/RegisterPage";
 import TransactionsPage from "../../pages/TransactionsPage/TransactionsPage";
 import AnalyticsPage from "../../pages/AnalyticsPage/AnalyticsPage";
-import CardPage from "../../pages/CardPage/CardPage";
-import NewTaskPage from "../../pages/NewTaskPage/NewTaskPage";
 import ExitPage from "../../pages/ExitPage/ExitPage";
 import NotFoundPage from "../../pages/NotFoundPage/NotFoundPage";
 import ProtectedRoute from "../ProtectedRoute/ProtectedRoute";
@@ -38,22 +36,6 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <AnalyticsPage />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/card/:id"
-        element={
-          <ProtectedRoute>
-            <CardPage />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/new-task"
-        element={
-          <ProtectedRoute>
-            <NewTaskPage />
           </ProtectedRoute>
         }
       />

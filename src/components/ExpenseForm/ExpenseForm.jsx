@@ -5,11 +5,16 @@ import {
   FormField,
   FieldLabel,
   Input,
+  AmountInputContainer,
+  AmountInput,
+  CurrencyLabel,
+  DateInput,
   CategoriesContainer,
   CategoryButton,
   CategoryIcon,
   SubmitButton,
 } from "./ExpenseForm.styled";
+import { formatMoneyInput, validateMoneyInput } from "../../utils/formatMoney";
 
 const categories = [
   { id: "food", name: "Еда", icon: "/images/icons/bag-2.svg" },
@@ -38,6 +43,20 @@ const ExpenseForm = () => {
       ...prev,
       [name]: value,
     }));
+  };
+
+  const handleAmountChange = (e) => {
+    const { value } = e.target;
+
+    // Валидируем введенное значение
+    if (validateMoneyInput(value)) {
+      // Форматируем значение
+      const formattedValue = formatMoneyInput(value);
+      setFormData((prev) => ({
+        ...prev,
+        amount: formattedValue,
+      }));
+    }
   };
 
   const handleCategorySelect = (categoryId) => {
@@ -88,24 +107,29 @@ const ExpenseForm = () => {
 
         <FormField>
           <FieldLabel>Дата</FieldLabel>
-          <Input
+          <DateInput
             type="date"
             name="date"
             placeholder="Введите дату"
             value={formData.date}
             onChange={handleInputChange}
+            $hasValue={!!formData.date}
           />
         </FormField>
 
         <FormField>
           <FieldLabel>Сумма</FieldLabel>
-          <Input
-            type="text"
-            name="amount"
-            placeholder="Введите сумму"
-            value={formData.amount}
-            onChange={handleInputChange}
-          />
+          <AmountInputContainer>
+            <AmountInput
+              type="text"
+              name="amount"
+              placeholder="0.00"
+              value={formData.amount}
+              onChange={handleAmountChange}
+              inputMode="decimal"
+            />
+            <CurrencyLabel>₽</CurrencyLabel>
+          </AmountInputContainer>
         </FormField>
 
         <SubmitButton type="submit">Добавить новый расход</SubmitButton>

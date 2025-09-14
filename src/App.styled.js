@@ -34,8 +34,8 @@ export const GlobalStyle = createGlobalStyle`
     width: 100%;
     height: 100%;
     font-family: "Montserrat", Arial, Helvetica, sans-serif;
-    color: ${(props) => props.theme.colors.textPrimary};
-    background-color: ${(props) => props.theme.colors.background};
+    color: ${(props) => props.theme.text};
+    background-color: ${(props) => props.theme.background};
   }
 `;
 
@@ -45,7 +45,7 @@ export const Wrapper = styled.div`
   width: 100vw;
   min-height: 100vh;
   overflow: hidden;
-  background-color: ${(props) => props.theme.colors.background};
+  background-color: ${(props) => props.theme.background};
 `;
 
 // Контейнер для центрирования контента
