@@ -270,6 +270,121 @@ export const transactionsApi = {
   },
 
   /**
+   * Получение аналитики транзакций за период
+   * @param {Date} startDate - Начальная дата периода
+   * @param {Date} endDate - Конечная дата периода
+   * @returns {Promise} Аналитика транзакций
+   */
+  getAnalytics: async (startDate, endDate) => {
+    try {
+      console.log("=== НАЧАЛО АНАЛИЗА getAnalytics ===");
+      console.log("Ищем транзакции за период:", {
+        startDate: startDate.toISOString(),
+        endDate: endDate.toISOString(),
+        startDateFormatted: startDate.toLocaleDateString(),
+        endDateFormatted: endDate.toLocaleDateString(),
+      });
+
+      // Получаем все транзакции
+      const transactions = await transactionsApi.getTransactions();
+      console.log("Всего транзакций получено:", transactions.length);
+
+      if (transactions.length > 0) {
+        console.log("Пример структуры транзакции:", transactions[0]);
+        console.log("Даты транзакций:");
+        transactions.forEach((transaction, index) => {
+          if (index < 5) {
+            // Показываем первые 5 транзакций
+            const transactionDate = new Date(transaction.date);
+            console.log(
+              `  ${index + 1}. ID: ${
+                transaction._id || transaction.id
+              }, Дата: ${
+                transaction.date
+              } -> ${transactionDate.toLocaleDateString()}, Сумма: ${
+                transaction.sum || transaction.amount
+              }`
+            );
+          }
+        });
+      }
+
+      // Фильтруем транзакции по периоду
+      const filteredTransactions = transactions.filter((transaction) => {
+        const transactionDate = new Date(transaction.date);
+        const isInRange =
+          transactionDate >= startDate && transactionDate <= endDate;
+
+        if (isInRange) {
+          console.log(
+            `✅ Транзакция ПОДХОДИТ: ${
+              transaction.date
+            } (${transactionDate.toLocaleDateString()}) - сумма: ${
+              transaction.sum || transaction.amount
+            }`
+          );
+        }
+
+        return isInRange;
+      });
+
+      console.log(
+        `Найдено ${filteredTransactions.length} транзакций за выбранный период`
+      );
+
+      // Группируем по категориям и считаем суммы
+      const analytics = filteredTransactions.reduce(
+        (acc, transaction) => {
+          // Убираем проверку на type, так как в API все транзакции являются расходами
+          const category = transaction.category || "Прочие расходы";
+          if (!acc.categories[category]) {
+            acc.categories[category] = {
+              name: category,
+              amount: 0,
+              count: 0,
+            };
+          }
+          const amount = parseFloat(transaction.sum || transaction.amount || 0);
+          acc.categories[category].amount += amount;
+          acc.categories[category].count += 1;
+          acc.totalExpenses += amount;
+
+          console.log(
+            `Добавлена транзакция в категорию "${category}": ${amount} руб.`
+          );
+
+          return acc;
+        },
+        {
+          totalExpenses: 0,
+          categories: {},
+          period: {
+            start: startDate,
+            end: endDate,
+          },
+        }
+      );
+
+      // Преобразуем объект категорий в массив и сортируем по сумме
+      analytics.categoriesArray = Object.values(analytics.categories).sort(
+        (a, b) => b.amount - a.amount
+      );
+
+      console.log("=== РЕЗУЛЬТАТ АНАЛИТИКИ ===");
+      console.log("Общие расходы:", analytics.totalExpenses);
+      console.log("Категории:", analytics.categoriesArray);
+      console.log("=== КОНЕЦ АНАЛИЗА ===");
+
+      return analytics;
+    } catch (error) {
+      console.error("Ошибка при получении аналитики:", error);
+      throw new Error(
+        error.response?.data?.error || "Ошибка при загрузке аналитики"
+      );
+    }
+  },
+
+  /**
    * Получение транзакции по ID
    * @param {string|number} id - ID транзакции
    * @returns {Promise} Данные транзакции
