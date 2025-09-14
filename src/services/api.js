@@ -3,7 +3,8 @@ import { authNotifications, generalNotifications } from "./toastNotifications";
 
 // Базовая конфигурация API
 const API_BASE_URL = "https://wedev-api.sky.pro";
-const API_TOKEN = "bgc0b8awbwas6g5g5k5o5s5w606g37w3cc3bo3b83k39s3co3c83c03ck";
+const API_TOKEN =
+  "d874c4asboc054cod06g5g5k5o5s5w606g3983bo3d43cw3k3983bo3d43cw3co3bc";
 
 // Создание экземпляра axios с базовой конфигурацией
 const api = axios.create({
@@ -386,8 +387,19 @@ export const transactionsApi = {
    */
   deleteTransaction: async (id) => {
     try {
+      console.log("Удаляем транзакцию с ID:", id);
+
+      // Проверяем, что ID валидный
+      if (!id || id.startsWith("new-") || id.startsWith("temp-")) {
+        throw new Error(
+          "Невалидный ID транзакции. Нельзя удалить транзакцию без серверного ID."
+        );
+      }
+
       // Используем fetch с правильными заголовками
       const token = localStorage.getItem("authToken") || API_TOKEN;
+      console.log("Используемый токен для удаления:", token);
+
       const response = await fetch(`${API_BASE_URL}/api/transactions/${id}`, {
         method: "DELETE",
         headers: {
@@ -395,8 +407,11 @@ export const transactionsApi = {
         },
       });
 
+      console.log("Статус ответа при удалении:", response.status);
+
       if (!response.ok) {
         const errorText = await response.text();
+        console.log("Ошибка от сервера при удалении:", errorText);
 
         try {
           const errorData = JSON.parse(errorText);
@@ -406,8 +421,17 @@ export const transactionsApi = {
         }
       }
 
-      const data = await response.json();
-      return data;
+      // Обрабатываем ответ сервера
+      const contentType = response.headers.get("content-type");
+      if (contentType && contentType.includes("application/json")) {
+        const data = await response.json();
+        console.log("Ответ сервера при удалении:", data);
+        return data;
+      } else {
+        // Если сервер не возвращает JSON, считаем операцию успешной
+        console.log("Транзакция успешно удалена (нет JSON ответа)");
+        return { success: true };
+      }
     } catch (error) {
       console.error("Ошибка при удалении транзакции:", error);
       throw new Error(error.message || "Ошибка при удалении транзакции");

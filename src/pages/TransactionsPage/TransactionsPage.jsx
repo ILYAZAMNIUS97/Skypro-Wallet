@@ -106,16 +106,16 @@ const TransactionsPage = () => {
       console.log("Все транзакции как расходы:", expenseTransactions);
 
       const formattedExpenses = expenseTransactions
-        .map((transaction, index) => ({
-          id: transaction._id || transaction.id || `temp-${index}`, // Добавляем временный ID если отсутствует
+        .filter((transaction) => transaction._id || transaction.id) // Убираем записи без валидного ID
+        .map((transaction) => ({
+          id: transaction._id || transaction.id, // Используем только реальный ID от сервера
           description: transaction.description || "Без описания",
           category: getCategoryDisplayName(transaction.category),
           date: formatDateForDisplay(transaction.date),
-          amount: formatMoney(transaction.sum || transaction.amount || 0), // Исправлено: используем sum из API
+          amount: formatMoney(transaction.sum || transaction.amount || 0), // Используем sum из API
           // Сохраняем исходную дату для сортировки
           originalDate: transaction.date,
         }))
-        .filter((expense) => expense.id) // Убираем записи без ID
         .sort((a, b) => {
           // Преобразуем даты в формат для сравнения
           const dateA = new Date(a.originalDate);
@@ -142,13 +142,21 @@ const TransactionsPage = () => {
   const handleTransactionAdded = (newTransaction) => {
     console.log("Добавляем новую транзакцию:", newTransaction);
 
+    // Проверяем, что у транзакции есть правильный ID от сервера
+    if (!newTransaction._id && !newTransaction.id) {
+      console.error("Транзакция не имеет ID от сервера");
+      // Перезагружаем все транзакции, чтобы получить корректные данные
+      loadTransactions();
+      return;
+    }
+
     // Форматируем новую транзакцию для добавления в список
     const formattedTransaction = {
-      id: newTransaction._id || newTransaction.id || `new-${Date.now()}`, // Генерируем уникальный ID если отсутствует
+      id: newTransaction._id || newTransaction.id, // Используем только реальный ID от сервера
       description: newTransaction.description || "Без описания",
       category: getCategoryDisplayName(newTransaction.category),
       date: formatDateForDisplay(newTransaction.date),
-      amount: formatMoney(newTransaction.sum || newTransaction.amount || 0), // Исправлено: используем sum из API
+      amount: formatMoney(newTransaction.sum || newTransaction.amount || 0), // Используем sum из API
       originalDate: newTransaction.date,
     };
 
