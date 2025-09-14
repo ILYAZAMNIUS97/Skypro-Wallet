@@ -245,5 +245,175 @@ export const authApi = {
   },
 };
 
+// API методы для работы с транзакциями
+export const transactionsApi = {
+  /**
+   * Получение всех транзакций пользователя
+   * @returns {Promise} Список транзакций
+   */
+  getTransactions: async () => {
+    try {
+      const response = await api.get("/api/transactions");
+      const transactions = response.data.transactions || response.data;
+      console.log("Получены транзакции:", transactions);
+      if (transactions && transactions.length > 0) {
+        console.log("Пример структуры транзакции:", transactions[0]);
+      }
+      return transactions;
+    } catch (error) {
+      console.error("Ошибка при получении транзакций:", error);
+      throw new Error(
+        error.response?.data?.error || "Ошибка при загрузке транзакций"
+      );
+    }
+  },
+
+  /**
+   * Получение транзакции по ID
+   * @param {string|number} id - ID транзакции
+   * @returns {Promise} Данные транзакции
+   */
+  getTransaction: async (id) => {
+    try {
+      const response = await api.get(`/api/transactions/${id}`);
+      return response.data.transaction || response.data;
+    } catch (error) {
+      console.error("Ошибка при получении транзакции:", error);
+      throw new Error(
+        error.response?.data?.error || "Ошибка при загрузке транзакции"
+      );
+    }
+  },
+
+  /**
+   * Создание новой транзакции
+   * @param {Object} transactionData - Данные транзакции
+   * @returns {Promise} Созданная транзакция
+   */
+  createTransaction: async (transactionData) => {
+    try {
+      console.log("Отправляем данные на сервер:", transactionData);
+      console.log("JSON данные:", JSON.stringify(transactionData));
+
+      // Используем fetch с правильными заголовками как в методах авторизации
+      const token = localStorage.getItem("authToken") || API_TOKEN;
+
+      console.log("Используемый токен:", token);
+      console.log("URL запроса:", `${API_BASE_URL}/api/transactions`);
+
+      const response = await fetch(`${API_BASE_URL}/api/transactions`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "text/plain",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(transactionData),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.log("Ошибка от сервера:", {
+          status: response.status,
+          statusText: response.statusText,
+          errorText: errorText,
+        });
+
+        try {
+          const errorData = JSON.parse(errorText);
+          throw new Error(errorData.error || "Ошибка при создании транзакции");
+        } catch {
+          throw new Error(
+            `Ошибка HTTP: ${response.status} - ${
+              errorText || response.statusText
+            }`
+          );
+        }
+      }
+
+      const data = await response.json();
+      console.log("Успешный ответ от сервера:", data);
+      return data.transaction || data;
+    } catch (error) {
+      console.error("Ошибка при создании транзакции:", error);
+      throw new Error(error.message || "Ошибка при создании транзакции");
+    }
+  },
+
+  /**
+   * Обновление транзакции
+   * @param {string|number} id - ID транзакции
+   * @param {Object} transactionData - Новые данные транзакции
+   * @returns {Promise} Обновленная транзакция
+   */
+  updateTransaction: async (id, transactionData) => {
+    try {
+      // Используем fetch с правильными заголовками
+      const token = localStorage.getItem("authToken") || API_TOKEN;
+      const response = await fetch(`${API_BASE_URL}/api/transactions/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "text/plain",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(transactionData),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+
+        try {
+          const errorData = JSON.parse(errorText);
+          throw new Error(
+            errorData.error || "Ошибка при обновлении транзакции"
+          );
+        } catch {
+          throw new Error(`Ошибка HTTP: ${response.status}`);
+        }
+      }
+
+      const data = await response.json();
+      return data.transaction || data;
+    } catch (error) {
+      console.error("Ошибка при обновлении транзакции:", error);
+      throw new Error(error.message || "Ошибка при обновлении транзакции");
+    }
+  },
+
+  /**
+   * Удаление транзакции
+   * @param {string|number} id - ID транзакции
+   * @returns {Promise} Результат удаления
+   */
+  deleteTransaction: async (id) => {
+    try {
+      // Используем fetch с правильными заголовками
+      const token = localStorage.getItem("authToken") || API_TOKEN;
+      const response = await fetch(`${API_BASE_URL}/api/transactions/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+
+        try {
+          const errorData = JSON.parse(errorText);
+          throw new Error(errorData.error || "Ошибка при удалении транзакции");
+        } catch {
+          throw new Error(`Ошибка HTTP: ${response.status}`);
+        }
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Ошибка при удалении транзакции:", error);
+      throw new Error(error.message || "Ошибка при удалении транзакции");
+    }
+  },
+};
+
 // Экспорт основного экземпляра API
 export default api;

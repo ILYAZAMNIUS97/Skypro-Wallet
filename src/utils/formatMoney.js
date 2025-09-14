@@ -34,6 +34,23 @@ export const formatMoneyInput = (value) => {
  * @param {string|number} value - Значение для форматирования
  * @returns {string} Отформатированная сумма с символом рубля
  */
+export const formatMoney = (value) => {
+  if (!value) return "0 ₽";
+
+  const numericValue = parseFloat(value);
+  if (isNaN(numericValue)) return "0 ₽";
+
+  // Форматируем с разделителями тысяч
+  const formattedNumber = new Intl.NumberFormat("ru-RU").format(numericValue);
+
+  return `${formattedNumber} ₽`;
+};
+
+/**
+ * Форматирует сумму для отображения с разделителями тысяч и символом рубля
+ * @param {string|number} value - Значение для форматирования
+ * @returns {string} Отформатированная сумма с символом рубля
+ */
 export const formatMoneyDisplay = (value) => {
   if (!value) return "";
 
