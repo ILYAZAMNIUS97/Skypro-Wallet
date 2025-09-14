@@ -9,11 +9,19 @@ import {
   CalendarMonth,
   CalendarGrid,
   CalendarCell,
+  PeriodModeButton,
+  PeriodModeButtons,
+  SelectedPeriodDisplay,
 } from "./Calendar.styled";
 
 function Calendar({ onPeriodChange }) {
-  // Состояние для выбранного периода (убираем селекторы, оставляем только день)
+  // Состояние для выбранного периода
   const [selectedDates, setSelectedDates] = useState([]);
+  // Режим выбора: 'single' - один день, 'range' - диапазон
+  const [selectionMode, setSelectionMode] = useState("single");
+  // Состояние для выбора диапазона
+  const [rangeStart, setRangeStart] = useState(null);
+  const [rangeEnd, setRangeEnd] = useState(null);
 
   // Расширенный список месяцев для всего 2025 года
   const months = [
@@ -81,41 +89,120 @@ function Calendar({ onPeriodChange }) {
 
   // Функция для определения выбранного дня
   const isSelectedDay = (day, monthData) => {
-    if (selectedDates.length === 0) return false;
+    if (selectionMode === "single") {
+      if (selectedDates.length === 0) return false;
 
-    return selectedDates.some((date) => {
-      return (
-        date.getDate() === day &&
-        date.getMonth() === monthData.month &&
-        date.getFullYear() === monthData.year
-      );
-    });
+      return selectedDates.some((date) => {
+        return (
+          date.getDate() === day &&
+          date.getMonth() === monthData.month &&
+          date.getFullYear() === monthData.year
+        );
+      });
+    } else {
+      // Для режима диапазона
+      const currentDate = new Date(monthData.year, monthData.month, day);
+
+      if (rangeStart && rangeEnd) {
+        return currentDate >= rangeStart && currentDate <= rangeEnd;
+      } else if (rangeStart) {
+        return currentDate.getTime() === rangeStart.getTime();
+      }
+
+      return false;
+    }
+  };
+
+  // Функция для определения является ли день в диапазоне
+  const isInRange = (day, monthData) => {
+    if (selectionMode !== "range" || !rangeStart || !rangeEnd) return false;
+
+    const currentDate = new Date(monthData.year, monthData.month, day);
+    return currentDate > rangeStart && currentDate < rangeEnd;
+  };
+
+  // Функция переключения режима выбора
+  const handleModeChange = (mode) => {
+    setSelectionMode(mode);
+    setSelectedDates([]);
+    setRangeStart(null);
+    setRangeEnd(null);
+
+    // Уведомляем родительский компонент об очистке
+    if (onPeriodChange) {
+      onPeriodChange({
+        type: mode,
+        dates: [],
+        period: "",
+      });
+    }
   };
 
   // Обработка клика по дню
   const handleDayClick = useCallback(
     (day, monthData) => {
       const clickedDate = new Date(monthData.year, monthData.month, day);
-      const newSelectedDates = [clickedDate];
 
-      setSelectedDates(newSelectedDates);
+      if (selectionMode === "single") {
+        // Режим одного дня
+        const newSelectedDates = [clickedDate];
+        setSelectedDates(newSelectedDates);
 
-      // Уведомляем родительский компонент об изменении
-      if (onPeriodChange) {
-        const periodData = {
-          type: "day",
-          dates: newSelectedDates,
-          period: formatPeriodText(newSelectedDates),
-        };
+        if (onPeriodChange) {
+          const periodData = {
+            type: "day",
+            dates: newSelectedDates,
+            period: formatPeriodText(newSelectedDates, "single"),
+          };
 
-        onPeriodChange(periodData);
+          onPeriodChange(periodData);
+        }
+      } else {
+        // Режим диапазона
+        if (!rangeStart || (rangeStart && rangeEnd)) {
+          // Начинаем новый диапазон
+          setRangeStart(clickedDate);
+          setRangeEnd(null);
+          setSelectedDates([clickedDate]);
+
+          if (onPeriodChange) {
+            const periodData = {
+              type: "range",
+              dates: [clickedDate],
+              period: formatPeriodText([clickedDate], "range"),
+            };
+
+            onPeriodChange(periodData);
+          }
+        } else {
+          // Завершаем диапазон
+          const startDate = rangeStart;
+          const endDate = clickedDate;
+
+          // Убеждаемся, что даты в правильном порядке
+          const sortedDates = [startDate, endDate].sort((a, b) => a - b);
+
+          setRangeStart(sortedDates[0]);
+          setRangeEnd(sortedDates[1]);
+          setSelectedDates(sortedDates);
+
+          if (onPeriodChange) {
+            const periodData = {
+              type: "range",
+              dates: sortedDates,
+              period: formatPeriodText(sortedDates, "range"),
+            };
+
+            onPeriodChange(periodData);
+          }
+        }
       }
     },
-    [onPeriodChange]
+    [onPeriodChange, selectionMode, rangeStart, rangeEnd]
   );
 
   // Форматирование текста периода
-  const formatPeriodText = (dates) => {
+  const formatPeriodText = (dates, mode) => {
     if (dates.length === 0) return "";
 
     const formatDate = (date) => {
@@ -138,7 +225,11 @@ function Calendar({ onPeriodChange }) {
       } ${date.getFullYear()}`;
     };
 
-    return formatDate(dates[0]);
+    if (mode === "single" || dates.length === 1) {
+      return formatDate(dates[0]);
+    } else {
+      return `${formatDate(dates[0])} - ${formatDate(dates[1])}`;
+    }
   };
 
   // Генерируем дни календаря для конкретного месяца
@@ -172,6 +263,7 @@ function Calendar({ onPeriodChange }) {
         <CalendarCell
           key={day}
           $isSelected={isSelectedDay(day, monthData)}
+          $isInRange={isInRange(day, monthData)}
           $isOtherMonth={false}
           onClick={() => handleDayClick(day, monthData)}
         >
@@ -198,6 +290,29 @@ function Calendar({ onPeriodChange }) {
   return (
     <CalendarContainer>
       <CalendarTitle>Период</CalendarTitle>
+
+      {/* Кнопки переключения режима */}
+      <PeriodModeButtons>
+        <PeriodModeButton
+          $isActive={selectionMode === "single"}
+          onClick={() => handleModeChange("single")}
+        >
+          День
+        </PeriodModeButton>
+        <PeriodModeButton
+          $isActive={selectionMode === "range"}
+          onClick={() => handleModeChange("range")}
+        >
+          Период
+        </PeriodModeButton>
+      </PeriodModeButtons>
+
+      {/* Отображение выбранного периода */}
+      {selectedDates.length > 0 && (
+        <SelectedPeriodDisplay>
+          {formatPeriodText(selectedDates, selectionMode)}
+        </SelectedPeriodDisplay>
+      )}
 
       {/* Фиксированная шапка с днями недели */}
       <CalendarHeader>

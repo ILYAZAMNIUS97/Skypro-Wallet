@@ -103,6 +103,46 @@ export const CalendarGrid = styled.div`
   justify-content: flex-start;
 `;
 
+// Кнопки переключения режима выбора
+export const PeriodModeButtons = styled.div`
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+`;
+
+export const PeriodModeButton = styled.button`
+  flex: 1;
+  padding: 8px 16px;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  background-color: ${(props) => (props.$isActive ? "#7334EA" : "#FFFFFF")};
+  color: ${(props) => (props.$isActive ? "#FFFFFF" : "#666666")};
+  font-family: "Montserrat", sans-serif;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 1.219em;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: ${(props) => (props.$isActive ? "#6128D1" : "#F5F5F5")};
+  }
+`;
+
+// Отображение выбранного периода
+export const SelectedPeriodDisplay = styled.div`
+  padding: 12px 16px;
+  background: #f1ebfd;
+  border-radius: 12px;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1.219em;
+  color: #7334ea;
+  text-align: center;
+  margin-bottom: 16px;
+`;
+
 // Ячейка дня календаря (обновленные стили)
 export const CalendarCell = styled.div`
   width: 39.8px;
@@ -117,24 +157,47 @@ export const CalendarCell = styled.div`
   line-height: 1.219em;
   color: ${(props) => {
     if (props.$isSelected) return "#7334EA";
+    if (props.$isInRange) return "#7334EA";
     if (props.$isOtherMonth) return "transparent";
     return "#000000";
   }};
   background-color: ${(props) => {
     if (props.$isSelected) return "#F1EBFD";
+    if (props.$isInRange) return "#F8F4FF";
     return "transparent";
   }};
   cursor: ${(props) => (props.$isOtherMonth ? "default" : "pointer")};
   opacity: ${(props) => (props.$isOtherMonth ? 0 : 1)};
   transition: all 0.2s ease;
+  position: relative;
 
   &:hover {
     background-color: ${(props) => {
       if (props.$isOtherMonth) return "transparent";
       if (props.$isSelected) return "#F1EBFD";
+      if (props.$isInRange) return "#F8F4FF";
       return "#f5f5f5";
     }};
   }
+
+  // Для крайних дней диапазона добавляем особые стили
+  ${(props) => {
+    if (props.$isInRange && !props.$isSelected) {
+      return `
+        border-radius: 0;
+        &:first-of-type,
+        &:nth-child(7n+1) {
+          border-top-left-radius: 60px;
+          border-bottom-left-radius: 60px;
+        }
+        &:last-of-type,
+        &:nth-child(7n) {
+          border-top-right-radius: 60px;
+          border-bottom-right-radius: 60px;
+        }
+      `;
+    }
+  }}
 `;
 
 // Убираем неиспользуемые стили
