@@ -19,6 +19,7 @@ import { transactionsApi } from "../../services/api";
 import { financeNotifications } from "../../services/toastNotifications";
 import { useAuth } from "../../contexts/AuthContext";
 import { categories } from "../../utils/categories";
+import { formatDateForApi } from "../../utils/dateUtils";
 
 const ExpenseForm = ({ onSubmit }) => {
   const [formData, setFormData] = useState({
@@ -63,12 +64,6 @@ const ExpenseForm = ({ onSubmit }) => {
     // Возвращаем английский ID категории для API
     const category = categories.find((cat) => cat.id === categoryId);
     return category ? category.id : "others";
-  };
-
-  const formatDateForApi = (dateString) => {
-    const date = new Date(dateString);
-    // Попробуем ISO формат даты для API
-    return date.toISOString().split("T")[0]; // YYYY-MM-DD
   };
 
   const validateForm = () => {

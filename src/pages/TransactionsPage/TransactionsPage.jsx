@@ -15,29 +15,7 @@ import { transactionsApi } from "../../services/api";
 import { financeNotifications } from "../../services/toastNotifications";
 import { formatMoney } from "../../utils/formatMoney";
 import { getCategoryDisplayName } from "../../utils/categories";
-
-/**
- * Форматирование даты для отображения
- * @param {string} dateString - Дата в ISO формате
- * @returns {string} Дата в формате ДД.ММ.ГГГГ
- */
-const formatDateForDisplay = (dateString) => {
-  if (!dateString) return "";
-
-  try {
-    const date = new Date(dateString);
-    if (isNaN(date.getTime())) return dateString;
-
-    const day = date.getDate().toString().padStart(2, "0");
-    const month = (date.getMonth() + 1).toString().padStart(2, "0");
-    const year = date.getFullYear();
-
-    return `${day}.${month}.${year}`;
-  } catch (error) {
-    console.error("Ошибка форматирования даты:", error);
-    return dateString;
-  }
-};
+import { formatDateForDisplay } from "../../utils/dateUtils";
 
 const TransactionsPage = () => {
   const [expenses, setExpenses] = useState([]);
