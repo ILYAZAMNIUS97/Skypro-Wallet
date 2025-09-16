@@ -41,11 +41,23 @@ export const TableBody = styled.div`
   overflow-y: auto;
   padding-right: 8px;
 
-  /* Скрыть стандартный скроллбар */
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+  /* Стили полосы прокрутки как в календаре */
   &::-webkit-scrollbar {
-    display: none;
+    width: 4px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 2px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 2px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
   }
 `;
 
@@ -88,14 +100,4 @@ export const DeleteIcon = styled.img`
   width: 12px;
   height: 12px;
   object-fit: contain;
-`;
-
-export const ScrollIndicator = styled.div`
-  position: absolute;
-  right: 6px;
-  top: 197px;
-  width: 6px;
-  height: 100px;
-  background-color: #d9d9d9;
-  border-radius: 30px;
 `;

@@ -76,6 +76,15 @@ export const financeNotifications = {
   invalidDate: () => toast.warning("Укажите корректную дату", defaultOptions),
 
   categoryRequired: () => toast.warning("Выберите категорию", defaultOptions),
+
+  transactionError: (message) =>
+    toast.error(message || "Ошибка при добавлении транзакции", defaultOptions),
+
+  validationError: (message) =>
+    toast.warning(
+      message || "Проверьте правильность заполнения полей",
+      defaultOptions
+    ),
 };
 
 // Общие уведомления

@@ -3,7 +3,8 @@ import { authNotifications, generalNotifications } from "./toastNotifications";
 
 // Базовая конфигурация API
 const API_BASE_URL = "https://wedev-api.sky.pro";
-const API_TOKEN = "bgc0b8awbwas6g5g5k5o5s5w606g37w3cc3bo3b83k39s3co3c83c03ck";
+const API_TOKEN =
+  "d874c4asboc054cod06g5g5k5o5s5w606g3983bo3d43cw3k3983bo3d43cw3co3bc";
 
 // Создание экземпляра axios с базовой конфигурацией
 const api = axios.create({
@@ -241,6 +242,270 @@ export const authApi = {
       localStorage.setItem("currentUser", JSON.stringify(userData));
     } catch (error) {
       console.error("Ошибка при сохранении данных пользователя:", error);
+    }
+  },
+};
+
+// API методы для работы с транзакциями
+export const transactionsApi = {
+  /**
+   * Получение всех транзакций пользователя
+   * @returns {Promise} Список транзакций
+   */
+  getTransactions: async () => {
+    try {
+      const response = await api.get("/api/transactions");
+      const transactions = response.data.transactions || response.data;
+      console.log("Получены транзакции:", transactions);
+      if (transactions && transactions.length > 0) {
+        console.log("Пример структуры транзакции:", transactions[0]);
+      }
+      return transactions;
+    } catch (error) {
+      console.error("Ошибка при получении транзакций:", error);
+      throw new Error(
+        error.response?.data?.error || "Ошибка при загрузке транзакций"
+      );
+    }
+  },
+
+  /**
+   * Получение аналитики транзакций за период
+   * @param {Date} startDate - Начальная дата периода
+   * @param {Date} endDate - Конечная дата периода
+   * @returns {Promise} Аналитика транзакций
+   */
+  getAnalytics: async (startDate, endDate) => {
+    try {
+      console.log("Загружаем аналитику за период:", {
+        startDate: startDate.toLocaleDateString(),
+        endDate: endDate.toLocaleDateString(),
+      });
+
+      // Получаем все транзакции
+      const transactions = await transactionsApi.getTransactions();
+
+      // Фильтруем транзакции по периоду
+      const filteredTransactions = transactions.filter((transaction) => {
+        const transactionDate = new Date(transaction.date);
+        return transactionDate >= startDate && transactionDate <= endDate;
+      });
+
+      console.log(
+        `Найдено ${filteredTransactions.length} транзакций за выбранный период`
+      );
+
+      // Группируем по категориям и считаем суммы
+      const analytics = filteredTransactions.reduce(
+        (acc, transaction) => {
+          // Убираем проверку на type, так как в API все транзакции являются расходами
+          const category = transaction.category || "Прочие расходы";
+          if (!acc.categories[category]) {
+            acc.categories[category] = {
+              name: category,
+              amount: 0,
+              count: 0,
+            };
+          }
+          const amount = parseFloat(transaction.sum || transaction.amount || 0);
+          acc.categories[category].amount += amount;
+          acc.categories[category].count += 1;
+          acc.totalExpenses += amount;
+
+          return acc;
+        },
+        {
+          totalExpenses: 0,
+          categories: {},
+          period: {
+            start: startDate,
+            end: endDate,
+          },
+        }
+      );
+
+      // Преобразуем объект категорий в массив и сортируем по сумме
+      analytics.categoriesArray = Object.values(analytics.categories).sort(
+        (a, b) => b.amount - a.amount
+      );
+
+      console.log("Общие расходы:", analytics.totalExpenses, "руб.");
+
+      return analytics;
+    } catch (error) {
+      console.error("Ошибка при получении аналитики:", error);
+      throw new Error(
+        error.response?.data?.error || "Ошибка при загрузке аналитики"
+      );
+    }
+  },
+
+  /**
+   * Получение транзакции по ID
+   * @param {string|number} id - ID транзакции
+   * @returns {Promise} Данные транзакции
+   */
+  getTransaction: async (id) => {
+    try {
+      const response = await api.get(`/api/transactions/${id}`);
+      return response.data.transaction || response.data;
+    } catch (error) {
+      console.error("Ошибка при получении транзакции:", error);
+      throw new Error(
+        error.response?.data?.error || "Ошибка при загрузке транзакции"
+      );
+    }
+  },
+
+  /**
+   * Создание новой транзакции
+   * @param {Object} transactionData - Данные транзакции
+   * @returns {Promise} Созданная транзакция
+   */
+  createTransaction: async (transactionData) => {
+    try {
+      console.log("Отправляем данные на сервер:", transactionData);
+      console.log("JSON данные:", JSON.stringify(transactionData));
+
+      // Используем fetch с правильными заголовками как в методах авторизации
+      const token = localStorage.getItem("authToken") || API_TOKEN;
+
+      console.log("Используемый токен:", token);
+      console.log("URL запроса:", `${API_BASE_URL}/api/transactions`);
+
+      const response = await fetch(`${API_BASE_URL}/api/transactions`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "text/plain",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(transactionData),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.log("Ошибка от сервера:", {
+          status: response.status,
+          statusText: response.statusText,
+          errorText: errorText,
+        });
+
+        try {
+          const errorData = JSON.parse(errorText);
+          throw new Error(errorData.error || "Ошибка при создании транзакции");
+        } catch {
+          throw new Error(
+            `Ошибка HTTP: ${response.status} - ${
+              errorText || response.statusText
+            }`
+          );
+        }
+      }
+
+      const data = await response.json();
+      console.log("Успешный ответ от сервера:", data);
+      return data.transaction || data;
+    } catch (error) {
+      console.error("Ошибка при создании транзакции:", error);
+      throw new Error(error.message || "Ошибка при создании транзакции");
+    }
+  },
+
+  /**
+   * Обновление транзакции
+   * @param {string|number} id - ID транзакции
+   * @param {Object} transactionData - Новые данные транзакции
+   * @returns {Promise} Обновленная транзакция
+   */
+  updateTransaction: async (id, transactionData) => {
+    try {
+      // Используем fetch с правильными заголовками
+      const token = localStorage.getItem("authToken") || API_TOKEN;
+      const response = await fetch(`${API_BASE_URL}/api/transactions/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "text/plain",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(transactionData),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+
+        try {
+          const errorData = JSON.parse(errorText);
+          throw new Error(
+            errorData.error || "Ошибка при обновлении транзакции"
+          );
+        } catch {
+          throw new Error(`Ошибка HTTP: ${response.status}`);
+        }
+      }
+
+      const data = await response.json();
+      return data.transaction || data;
+    } catch (error) {
+      console.error("Ошибка при обновлении транзакции:", error);
+      throw new Error(error.message || "Ошибка при обновлении транзакции");
+    }
+  },
+
+  /**
+   * Удаление транзакции
+   * @param {string|number} id - ID транзакции
+   * @returns {Promise} Результат удаления
+   */
+  deleteTransaction: async (id) => {
+    try {
+      console.log("Удаляем транзакцию с ID:", id);
+
+      // Проверяем, что ID валидный
+      if (!id || id.startsWith("new-") || id.startsWith("temp-")) {
+        throw new Error(
+          "Невалидный ID транзакции. Нельзя удалить транзакцию без серверного ID."
+        );
+      }
+
+      // Используем fetch с правильными заголовками
+      const token = localStorage.getItem("authToken") || API_TOKEN;
+      console.log("Используемый токен для удаления:", token);
+
+      const response = await fetch(`${API_BASE_URL}/api/transactions/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      console.log("Статус ответа при удалении:", response.status);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.log("Ошибка от сервера при удалении:", errorText);
+
+        try {
+          const errorData = JSON.parse(errorText);
+          throw new Error(errorData.error || "Ошибка при удалении транзакции");
+        } catch {
+          throw new Error(`Ошибка HTTP: ${response.status}`);
+        }
+      }
+
+      // Обрабатываем ответ сервера
+      const contentType = response.headers.get("content-type");
+      if (contentType && contentType.includes("application/json")) {
+        const data = await response.json();
+        console.log("Ответ сервера при удалении:", data);
+        return data;
+      } else {
+        // Если сервер не возвращает JSON, считаем операцию успешной
+        console.log("Транзакция успешно удалена (нет JSON ответа)");
+        return { success: true };
+      }
+    } catch (error) {
+      console.error("Ошибка при удалении транзакции:", error);
+      throw new Error(error.message || "Ошибка при удалении транзакции");
     }
   },
 };

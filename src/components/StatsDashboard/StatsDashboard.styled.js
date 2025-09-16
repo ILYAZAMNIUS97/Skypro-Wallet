@@ -78,3 +78,29 @@ export const CategoryAmount = styled.div`
   text-align: center;
   margin-bottom: 12px;
 `;
+
+export const NoDataMessage = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.5em;
+  color: #999999;
+  text-align: center;
+`;
+
+export const LoadingMessage = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.5em;
+  color: #666666;
+  text-align: center;
+`;
