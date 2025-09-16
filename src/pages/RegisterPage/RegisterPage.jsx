@@ -2,6 +2,12 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import {
+  validateEmail,
+  validatePassword,
+  validateName,
+} from "../../utils/validation";
+import { useFormValidation } from "../../hooks/useFormValidation";
+import {
   RegisterContainer,
   RegisterBackground,
   Header,
@@ -22,134 +28,42 @@ import {
 } from "./RegisterPage.styled";
 
 const RegisterPage = () => {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-  });
   const [isLoading, setIsLoading] = useState(false);
-  const [fieldErrors, setFieldErrors] = useState({
-    name: false,
-    email: false,
-    password: false,
-  });
-  const [fieldValid, setFieldValid] = useState({
-    name: false,
-    email: false,
-    password: false,
-  });
-  const [showError, setShowError] = useState(false);
-  const [touched, setTouched] = useState({
-    name: false,
-    email: false,
-    password: false,
-  });
-
   const { register } = useAuth();
   const navigate = useNavigate();
 
-  // Функции валидации
-  const validateName = (name) => {
-    return name.trim().length >= 2 && name.trim().split(" ").length >= 2;
+  // Начальные значения формы
+  const initialValues = {
+    name: "",
+    email: "",
+    password: "",
   };
 
-  const validateEmail = (email) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
+  // Валидаторы для полей
+  const validators = {
+    name: validateName,
+    email: validateEmail,
+    password: validatePassword,
   };
 
-  const validatePassword = (password) => {
-    return password.length >= 6;
-  };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-
-    // Валидация в реальном времени
-    let isValid = false;
-    let hasError = false;
-
-    switch (name) {
-      case "name":
-        isValid = validateName(value);
-        hasError = value.length > 0 && !isValid;
-        break;
-      case "email":
-        isValid = validateEmail(value);
-        hasError = value.length > 0 && !isValid;
-        break;
-      case "password":
-        isValid = validatePassword(value);
-        hasError = value.length > 0 && !isValid;
-        break;
-    }
-
-    setFieldValid((prev) => ({
-      ...prev,
-      [name]: isValid,
-    }));
-
-    setFieldErrors((prev) => ({
-      ...prev,
-      [name]: hasError,
-    }));
-
-    // Скрыть общую ошибку при вводе
-    if (showError) {
-      setShowError(false);
-    }
-  };
-
-  const handleInputBlur = (e) => {
-    const { name } = e.target;
-    setTouched((prev) => ({
-      ...prev,
-      [name]: true,
-    }));
-  };
+  // Используем универсальный хук для валидации
+  const {
+    formData,
+    fieldErrors,
+    fieldValid,
+    touched,
+    showError,
+    isFormValid,
+    handleInputChange,
+    handleInputBlur,
+    validateForm,
+    setShowError,
+  } = useFormValidation(initialValues, validators);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Отметить все поля как touched
-    setTouched({
-      name: true,
-      email: true,
-      password: true,
-    });
-
-    // Проверка всех полей
-    const nameValid = validateName(formData.name);
-    const emailValid = validateEmail(formData.email);
-    const passwordValid = validatePassword(formData.password);
-
-    const newFieldErrors = {
-      name: !nameValid,
-      email: !emailValid,
-      password: !passwordValid,
-    };
-
-    const newFieldValid = {
-      name: nameValid,
-      email: emailValid,
-      password: passwordValid,
-    };
-
-    setFieldErrors(newFieldErrors);
-    setFieldValid(newFieldValid);
-
-    // Если есть ошибки, показать сообщение
-    if (!nameValid || !emailValid || !passwordValid) {
-      setShowError(true);
-      return;
-    }
-
-    if (!formData.name || !formData.email || !formData.password) {
-      setShowError(true);
+    if (!validateForm()) {
       return;
     }
 
@@ -165,15 +79,6 @@ const RegisterPage = () => {
       setIsLoading(false);
     }
   };
-
-  // Проверка, активна ли кнопка
-  const isFormValid =
-    fieldValid.name &&
-    fieldValid.email &&
-    fieldValid.password &&
-    formData.name &&
-    formData.email &&
-    formData.password;
 
   return (
     <RegisterContainer>

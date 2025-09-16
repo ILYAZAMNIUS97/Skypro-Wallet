@@ -15,22 +15,11 @@ import {
   SubmitButton,
 } from "./ExpenseForm.styled";
 import { formatMoneyInput, validateMoneyInput } from "../../utils/formatMoney";
-import { transactionsApi, authApi } from "../../services/api";
+import { transactionsApi } from "../../services/api";
 import { financeNotifications } from "../../services/toastNotifications";
 import { useAuth } from "../../contexts/AuthContext";
-
-const categories = [
-  { id: "food", name: "Еда", icon: "/images/icons/bag-2.svg" },
-  { id: "transport", name: "Транспорт", icon: "/images/icons/car.svg" },
-  { id: "housing", name: "Жилье", icon: "/images/icons/house.svg" },
-  {
-    id: "joy",
-    name: "Развлечения",
-    icon: "/images/icons/gameboy.svg",
-  },
-  { id: "education", name: "Образование", icon: "/images/icons/teacher.svg" },
-  { id: "others", name: "Другое", icon: "/images/icons/message-text.svg" },
-];
+import { categories } from "../../utils/categories";
+import { formatDateForApi } from "../../utils/dateUtils";
 
 const ExpenseForm = ({ onSubmit }) => {
   const [formData, setFormData] = useState({
@@ -40,7 +29,7 @@ const ExpenseForm = ({ onSubmit }) => {
     amount: "",
   });
   const [isLoading, setIsLoading] = useState(false);
-  const { isAuth, user } = useAuth();
+  const { isAuth } = useAuth();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -75,12 +64,6 @@ const ExpenseForm = ({ onSubmit }) => {
     // Возвращаем английский ID категории для API
     const category = categories.find((cat) => cat.id === categoryId);
     return category ? category.id : "others";
-  };
-
-  const formatDateForApi = (dateString) => {
-    const date = new Date(dateString);
-    // Попробуем ISO формат даты для API
-    return date.toISOString().split("T")[0]; // YYYY-MM-DD
   };
 
   const validateForm = () => {
@@ -122,23 +105,13 @@ const ExpenseForm = ({ onSubmit }) => {
     setIsLoading(true);
 
     try {
-      // Проверяем токен
-      const token = localStorage.getItem("authToken");
-      console.log("Токен авторизации:", token ? "присутствует" : "отсутствует");
-      console.log("Пользователь:", user);
-      console.log("Статус авторизации:", authApi.isAuthenticated());
-
       // Подготавливаем данные для API
       const transactionData = {
         description: formData.description.trim(),
         category: getCategoryNameById(formData.category),
         date: formatDateForApi(formData.date),
-        sum: parseFloat(formData.amount.replace(/\s/g, "")), // API ожидает "sum", а не "amount"
-        // Убираем type - API его не принимает
+        sum: parseFloat(formData.amount.replace(/\s/g, "")),
       };
-
-      console.log("Данные формы:", formData);
-      console.log("Подготовленные данные для API:", transactionData);
 
       // Отправляем на сервер
       const newTransaction = await transactionsApi.createTransaction(
