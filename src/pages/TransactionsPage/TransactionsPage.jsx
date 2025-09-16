@@ -34,30 +34,18 @@ const TransactionsPage = () => {
       setIsLoading(true);
       const transactions = await transactionsApi.getTransactions();
 
-      // Поскольку API не поддерживает поле type, считаем все транзакции расходами
-      // В будущем можно добавить логику определения типа по другим критериям
-      const expenseTransactions = transactions.filter(() => {
-        // Пока считаем все транзакции расходами, так как форма создает только расходы
-        return true;
-      });
-
-      const formattedExpenses = expenseTransactions
-        .filter((transaction) => transaction._id || transaction.id) // Убираем записи без валидного ID
+      // Форматируем транзакции для отображения
+      const formattedExpenses = transactions
+        .filter((transaction) => transaction._id || transaction.id) // Только транзакции с валидным ID
         .map((transaction) => ({
-          id: transaction._id || transaction.id, // Используем только реальный ID от сервера
+          id: transaction._id || transaction.id,
           description: transaction.description || "Без описания",
           category: getCategoryDisplayName(transaction.category),
           date: formatDateForDisplay(transaction.date),
-          amount: formatMoney(transaction.sum || transaction.amount || 0), // Используем sum из API
-          // Сохраняем исходную дату для сортировки
+          amount: formatMoney(transaction.sum || transaction.amount || 0),
           originalDate: transaction.date,
         }))
-        .sort((a, b) => {
-          // Преобразуем даты в формат для сравнения
-          const dateA = new Date(a.originalDate);
-          const dateB = new Date(b.originalDate);
-          return dateB - dateA; // Сортируем по убыванию (новые сверху)
-        });
+        .sort((a, b) => new Date(b.originalDate) - new Date(a.originalDate)); // Новые сверху
 
       setExpenses(formattedExpenses);
     } catch (error) {
@@ -75,33 +63,29 @@ const TransactionsPage = () => {
    * @param {Object} newTransaction - Новая транзакция от сервера
    */
   const handleTransactionAdded = (newTransaction) => {
-    // Проверяем, что у транзакции есть правильный ID от сервера
+    // Проверяем валидность транзакции
     if (!newTransaction._id && !newTransaction.id) {
       console.error("Транзакция не имеет ID от сервера");
-      // Перезагружаем все транзакции, чтобы получить корректные данные
-      loadTransactions();
+      loadTransactions(); // Перезагружаем список
       return;
     }
 
-    // Форматируем новую транзакцию для добавления в список
+    // Форматируем и добавляем новую транзакцию
     const formattedTransaction = {
-      id: newTransaction._id || newTransaction.id, // Используем только реальный ID от сервера
+      id: newTransaction._id || newTransaction.id,
       description: newTransaction.description || "Без описания",
       category: getCategoryDisplayName(newTransaction.category),
       date: formatDateForDisplay(newTransaction.date),
-      amount: formatMoney(newTransaction.sum || newTransaction.amount || 0), // Используем sum из API
+      amount: formatMoney(newTransaction.sum || newTransaction.amount || 0),
       originalDate: newTransaction.date,
     };
 
-    // Добавляем новую транзакцию и пересортируем весь список
-    setExpenses((prevExpenses) => {
-      const updatedExpenses = [formattedTransaction, ...prevExpenses];
-      return updatedExpenses.sort((a, b) => {
-        const dateA = new Date(a.originalDate);
-        const dateB = new Date(b.originalDate);
-        return dateB - dateA; // Сортируем по убыванию (новые сверху)
-      });
-    });
+    // Добавляем в начало списка (новые сверху)
+    setExpenses((prevExpenses) =>
+      [formattedTransaction, ...prevExpenses].sort(
+        (a, b) => new Date(b.originalDate) - new Date(a.originalDate)
+      )
+    );
   };
 
   /**

@@ -15,21 +15,21 @@ export const useFormValidation = (initialValues, validators) => {
   const [touched, setTouched] = useState({});
   const [showError, setShowError] = useState(false);
 
-  // Инициализируем состояния ошибок и валидности на основе полей
+  // Инициализируем состояния на основе полей
   useEffect(() => {
-    const initialErrors = {};
-    const initialValid = {};
-    const initialTouched = {};
+    const initializeStates = () => {
+      const fields = Object.keys(initialValues);
+      const initialState = fields.reduce((acc, field) => {
+        acc[field] = false;
+        return acc;
+      }, {});
 
-    Object.keys(initialValues).forEach((field) => {
-      initialErrors[field] = false;
-      initialValid[field] = false;
-      initialTouched[field] = false;
-    });
+      setFieldErrors(initialState);
+      setFieldValid(initialState);
+      setTouched(initialState);
+    };
 
-    setFieldErrors(initialErrors);
-    setFieldValid(initialValid);
-    setTouched(initialTouched);
+    initializeStates();
   }, [initialValues]);
 
   /**
@@ -81,39 +81,42 @@ export const useFormValidation = (initialValues, validators) => {
    * @returns {boolean} true если форма валидна
    */
   const validateForm = () => {
-    // Отметить все поля как touched
-    const newTouched = {};
-    const newFieldErrors = {};
-    const newFieldValid = {};
+    const fields = Object.keys(initialValues);
 
-    Object.keys(initialValues).forEach((field) => {
-      newTouched[field] = true;
+    // Отмечаем все поля как touched и валидируем
+    const validationResults = fields.reduce(
+      (acc, field) => {
+        acc.touched[field] = true;
 
-      if (validators[field]) {
-        const isValid = validators[field](formData[field]);
-        newFieldValid[field] = isValid;
-        newFieldErrors[field] = !isValid;
-      }
-    });
+        if (validators[field]) {
+          const isValid = validators[field](formData[field]);
+          acc.valid[field] = isValid;
+          acc.errors[field] = !isValid;
+        }
 
-    setTouched(newTouched);
-    setFieldErrors(newFieldErrors);
-    setFieldValid(newFieldValid);
+        return acc;
+      },
+      { touched: {}, valid: {}, errors: {} }
+    );
 
-    // Проверяем, что все поля валидны и заполнены
-    const isFormValid = Object.keys(initialValues).every((field) => {
-      if (validators[field]) {
-        return validators[field](formData[field]) && formData[field]?.trim();
-      }
-      return formData[field]?.trim();
+    setTouched(validationResults.touched);
+    setFieldErrors(validationResults.errors);
+    setFieldValid(validationResults.valid);
+
+    // Проверяем валидность всей формы
+    const isFormValid = fields.every((field) => {
+      const hasValue = formData[field]?.trim();
+      const isValidField = validators[field]
+        ? validators[field](formData[field])
+        : true;
+      return hasValue && isValidField;
     });
 
     if (!isFormValid) {
       setShowError(true);
-      return false;
     }
 
-    return true;
+    return isFormValid;
   };
 
   /**
