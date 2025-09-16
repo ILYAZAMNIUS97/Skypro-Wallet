@@ -110,8 +110,7 @@ const ExpenseForm = ({ onSubmit }) => {
         description: formData.description.trim(),
         category: getCategoryNameById(formData.category),
         date: formatDateForApi(formData.date),
-        sum: parseFloat(formData.amount.replace(/\s/g, "")), // API ожидает "sum", а не "amount"
-        // Убираем type - API его не принимает
+        sum: parseFloat(formData.amount.replace(/\s/g, "")),
       };
 
       // Отправляем на сервер
