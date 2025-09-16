@@ -256,10 +256,6 @@ export const transactionsApi = {
     try {
       const response = await api.get("/api/transactions");
       const transactions = response.data.transactions || response.data;
-      console.log("Получены транзакции:", transactions);
-      if (transactions && transactions.length > 0) {
-        console.log("Пример структуры транзакции:", transactions[0]);
-      }
       return transactions;
     } catch (error) {
       console.error("Ошибка при получении транзакций:", error);
@@ -277,11 +273,6 @@ export const transactionsApi = {
    */
   getAnalytics: async (startDate, endDate) => {
     try {
-      console.log("Загружаем аналитику за период:", {
-        startDate: startDate.toLocaleDateString(),
-        endDate: endDate.toLocaleDateString(),
-      });
-
       // Получаем все транзакции
       const transactions = await transactionsApi.getTransactions();
 
@@ -329,8 +320,6 @@ export const transactionsApi = {
         (a, b) => b.amount - a.amount
       );
 
-      console.log("Общие расходы:", analytics.totalExpenses, "руб.");
-
       return analytics;
     } catch (error) {
       console.error("Ошибка при получении аналитики:", error);
@@ -364,14 +353,8 @@ export const transactionsApi = {
    */
   createTransaction: async (transactionData) => {
     try {
-      console.log("Отправляем данные на сервер:", transactionData);
-      console.log("JSON данные:", JSON.stringify(transactionData));
-
       // Используем fetch с правильными заголовками как в методах авторизации
       const token = localStorage.getItem("authToken") || API_TOKEN;
-
-      console.log("Используемый токен:", token);
-      console.log("URL запроса:", `${API_BASE_URL}/api/transactions`);
 
       const response = await fetch(`${API_BASE_URL}/api/transactions`, {
         method: "POST",
@@ -384,11 +367,6 @@ export const transactionsApi = {
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.log("Ошибка от сервера:", {
-          status: response.status,
-          statusText: response.statusText,
-          errorText: errorText,
-        });
 
         try {
           const errorData = JSON.parse(errorText);
@@ -403,7 +381,6 @@ export const transactionsApi = {
       }
 
       const data = await response.json();
-      console.log("Успешный ответ от сервера:", data);
       return data.transaction || data;
     } catch (error) {
       console.error("Ошибка при создании транзакции:", error);
@@ -458,8 +435,6 @@ export const transactionsApi = {
    */
   deleteTransaction: async (id) => {
     try {
-      console.log("Удаляем транзакцию с ID:", id);
-
       // Проверяем, что ID валидный
       if (!id || id.startsWith("new-") || id.startsWith("temp-")) {
         throw new Error(
@@ -469,7 +444,6 @@ export const transactionsApi = {
 
       // Используем fetch с правильными заголовками
       const token = localStorage.getItem("authToken") || API_TOKEN;
-      console.log("Используемый токен для удаления:", token);
 
       const response = await fetch(`${API_BASE_URL}/api/transactions/${id}`, {
         method: "DELETE",
@@ -478,11 +452,8 @@ export const transactionsApi = {
         },
       });
 
-      console.log("Статус ответа при удалении:", response.status);
-
       if (!response.ok) {
         const errorText = await response.text();
-        console.log("Ошибка от сервера при удалении:", errorText);
 
         try {
           const errorData = JSON.parse(errorText);
@@ -496,11 +467,9 @@ export const transactionsApi = {
       const contentType = response.headers.get("content-type");
       if (contentType && contentType.includes("application/json")) {
         const data = await response.json();
-        console.log("Ответ сервера при удалении:", data);
         return data;
       } else {
         // Если сервер не возвращает JSON, считаем операцию успешной
-        console.log("Транзакция успешно удалена (нет JSON ответа)");
         return { success: true };
       }
     } catch (error) {

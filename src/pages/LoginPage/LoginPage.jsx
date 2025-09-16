@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
+import { validateEmail, validatePassword } from "../../utils/validation";
 import {
   LoginContainer,
   LoginBackground,
@@ -42,16 +43,6 @@ const LoginPage = () => {
 
   const { login } = useAuth();
   const navigate = useNavigate();
-
-  // Функции валидации
-  const validateEmail = (email) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
-
-  const validatePassword = (password) => {
-    return password.length >= 6;
-  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;

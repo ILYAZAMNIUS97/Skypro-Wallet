@@ -2,6 +2,11 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import {
+  validateEmail,
+  validatePassword,
+  validateName,
+} from "../../utils/validation";
+import {
   RegisterContainer,
   RegisterBackground,
   Header,
@@ -47,20 +52,6 @@ const RegisterPage = () => {
 
   const { register } = useAuth();
   const navigate = useNavigate();
-
-  // Функции валидации
-  const validateName = (name) => {
-    return name.trim().length >= 2 && name.trim().split(" ").length >= 2;
-  };
-
-  const validateEmail = (email) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
-
-  const validatePassword = (password) => {
-    return password.length >= 6;
-  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;

@@ -1,5 +1,6 @@
 import React from "react";
 import { formatMoney } from "../../utils/formatMoney";
+import { getCategoryDisplayName } from "../../utils/categories";
 import {
   StatsContainer,
   ExpenseSummary,
@@ -12,25 +13,6 @@ import {
   NoDataMessage,
   LoadingMessage,
 } from "./StatsDashboard.styled";
-
-// Маппинг категорий для отображения на русском языке
-const categoryDisplayNames = {
-  food: "Еда",
-  transport: "Транспорт",
-  housing: "Жилье",
-  joy: "Развлечения",
-  education: "Образование",
-  others: "Другое",
-};
-
-/**
- * Получение русского названия категории по ID
- * @param {string} categoryId - ID категории
- * @returns {string} Русское название категории
- */
-const getCategoryDisplayName = (categoryId) => {
-  return categoryDisplayNames[categoryId] || categoryId || "Другое";
-};
 
 const StatsDashboard = ({ analyticsData, period, isLoading }) => {
   // Цвета для категорий

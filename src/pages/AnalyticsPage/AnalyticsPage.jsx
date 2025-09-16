@@ -19,8 +19,6 @@ const AnalyticsPage = () => {
 
   // Обработка изменения периода в календаре
   const handlePeriodChange = useCallback(async (periodData) => {
-    console.log("Выбран период:", periodData);
-
     // Если период не выбран или нет дат
     if (!periodData.dates || periodData.dates.length === 0) {
       setAnalyticsData(null);
@@ -56,11 +54,6 @@ const AnalyticsPage = () => {
           endDate.setHours(23, 59, 59, 999);
         }
       }
-
-      console.log("Загружаем аналитику за период:", {
-        startDate: startDate.toISOString(),
-        endDate: endDate.toISOString(),
-      });
 
       // Загружаем аналитику за выбранный период
       const analytics = await transactionsApi.getAnalytics(startDate, endDate);

@@ -14,25 +14,7 @@ import Loader from "../../components/Loader/Loader";
 import { transactionsApi } from "../../services/api";
 import { financeNotifications } from "../../services/toastNotifications";
 import { formatMoney } from "../../utils/formatMoney";
-
-// Маппинг категорий для отображения
-const categoryDisplayNames = {
-  food: "Еда",
-  transport: "Транспорт",
-  housing: "Жилье",
-  joy: "Развлечения",
-  education: "Образование",
-  others: "Другое",
-};
-
-/**
- * Получение русского названия категории по ID
- * @param {string} categoryId - ID категории
- * @returns {string} Русское название категории
- */
-const getCategoryDisplayName = (categoryId) => {
-  return categoryDisplayNames[categoryId] || categoryId || "Другое";
-};
+import { getCategoryDisplayName } from "../../utils/categories";
 
 /**
  * Форматирование даты для отображения
@@ -74,36 +56,12 @@ const TransactionsPage = () => {
       setIsLoading(true);
       const transactions = await transactionsApi.getTransactions();
 
-      console.log("Все транзакции:", transactions);
-      if (transactions && transactions.length > 0) {
-        console.log("Пример транзакции (полная структура):", transactions[0]);
-        console.log("Ключи объекта транзакции:", Object.keys(transactions[0]));
-        console.log("Структура первой транзакции:", {
-          id: transactions[0]._id || transactions[0].id,
-          type: transactions[0].type,
-          category: transactions[0].category,
-          description: transactions[0].description,
-          sum: transactions[0].sum,
-          amount: transactions[0].amount,
-          date: transactions[0].date,
-          // Все остальные поля
-          ...transactions[0],
-        });
-      }
-
       // Поскольку API не поддерживает поле type, считаем все транзакции расходами
       // В будущем можно добавить логику определения типа по другим критериям
-      const expenseTransactions = transactions.filter((transaction) => {
-        console.log(
-          `Транзакция ${transaction._id || transaction.id}: тип = "${
-            transaction.type
-          }"`
-        );
+      const expenseTransactions = transactions.filter(() => {
         // Пока считаем все транзакции расходами, так как форма создает только расходы
         return true;
       });
-
-      console.log("Все транзакции как расходы:", expenseTransactions);
 
       const formattedExpenses = expenseTransactions
         .filter((transaction) => transaction._id || transaction.id) // Убираем записи без валидного ID
@@ -123,7 +81,6 @@ const TransactionsPage = () => {
           return dateB - dateA; // Сортируем по убыванию (новые сверху)
         });
 
-      console.log("Отформатированные расходы:", formattedExpenses);
       setExpenses(formattedExpenses);
     } catch (error) {
       console.error("Ошибка при загрузке транзакций:", error);
@@ -140,8 +97,6 @@ const TransactionsPage = () => {
    * @param {Object} newTransaction - Новая транзакция от сервера
    */
   const handleTransactionAdded = (newTransaction) => {
-    console.log("Добавляем новую транзакцию:", newTransaction);
-
     // Проверяем, что у транзакции есть правильный ID от сервера
     if (!newTransaction._id && !newTransaction.id) {
       console.error("Транзакция не имеет ID от сервера");
@@ -159,8 +114,6 @@ const TransactionsPage = () => {
       amount: formatMoney(newTransaction.sum || newTransaction.amount || 0), // Используем sum из API
       originalDate: newTransaction.date,
     };
-
-    console.log("Отформатированная транзакция:", formattedTransaction);
 
     // Добавляем новую транзакцию и пересортируем весь список
     setExpenses((prevExpenses) => {
