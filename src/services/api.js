@@ -135,51 +135,6 @@ export const authApi = {
   },
 
   /**
-   * Получение информации о пользователе
-   * @returns {Promise} Данные пользователя
-   */
-  getUser: async () => {
-    try {
-      const response = await api.get("/api/user");
-      return response.data;
-    } catch (error) {
-      throw handleApiError(error, "Ошибка при получении данных пользователя");
-    }
-  },
-
-  /**
-   * Обновление данных пользователя
-   * @param {Object} userData - Новые данные пользователя
-   * @returns {Promise} Обновленные данные
-   */
-  updateUser: async (userData) => {
-    try {
-      const response = await api.put("/api/user", userData);
-      authNotifications.updateSuccess();
-      return response.data;
-    } catch (error) {
-      authNotifications.updateError();
-      throw handleApiError(error, "Ошибка при обновлении профиля");
-    }
-  },
-
-  /**
-   * Изменение пароля
-   * @param {Object} passwordData - Данные для смены пароля
-   * @returns {Promise} Результат операции
-   */
-  changePassword: async (passwordData) => {
-    try {
-      const response = await api.put("/api/user/password", passwordData);
-      authNotifications.passwordChanged();
-      return response.data;
-    } catch (error) {
-      authNotifications.passwordError();
-      throw handleApiError(error, "Ошибка при смене пароля");
-    }
-  },
-
-  /**
    * Выход из системы
    */
   logout: () => {
@@ -300,20 +255,6 @@ export const transactionsApi = {
   },
 
   /**
-   * Получение транзакции по ID
-   * @param {string|number} id - ID транзакции
-   * @returns {Promise} Данные транзакции
-   */
-  getTransaction: async (id) => {
-    try {
-      const response = await api.get(`/api/transactions/${id}`);
-      return response.data.transaction || response.data;
-    } catch (error) {
-      throw handleApiError(error, "Ошибка при загрузке транзакции");
-    }
-  },
-
-  /**
    * Создание новой транзакции
    * @param {Object} transactionData - Данные транзакции
    * @returns {Promise} Созданная транзакция
@@ -327,24 +268,6 @@ export const transactionsApi = {
       return response.data.transaction || response.data;
     } catch (error) {
       throw handleApiError(error, "Ошибка при создании транзакции");
-    }
-  },
-
-  /**
-   * Обновление транзакции
-   * @param {string|number} id - ID транзакции
-   * @param {Object} transactionData - Новые данные транзакции
-   * @returns {Promise} Обновленная транзакция
-   */
-  updateTransaction: async (id, transactionData) => {
-    try {
-      const response = await api.put(
-        `/api/transactions/${id}`,
-        JSON.stringify(transactionData)
-      );
-      return response.data.transaction || response.data;
-    } catch (error) {
-      throw handleApiError(error, "Ошибка при обновлении транзакции");
     }
   },
 

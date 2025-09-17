@@ -17,11 +17,7 @@ const defaultOptions = {
 
 // Уведомления для аутентификации
 export const authNotifications = {
-  loginSuccess: (username) =>
-    toast.success(
-      `Добро пожаловать${username ? `, ${username}` : ""}!`,
-      defaultOptions
-    ),
+  loginSuccess: () => toast.success("Добро пожаловать!", defaultOptions),
 
   loginError: (message) =>
     toast.error(message || "Неверные данные для входа", defaultOptions),
@@ -40,17 +36,6 @@ export const authNotifications = {
       ...defaultOptions,
       autoClose: 5000,
     }),
-
-  unauthorized: () => toast.error("Доступ запрещен", defaultOptions),
-
-  updateSuccess: () => toast.success("Профиль обновлен", defaultOptions),
-
-  updateError: () =>
-    toast.error("Ошибка при обновлении профиля", defaultOptions),
-
-  passwordChanged: () => toast.success("Пароль изменен", defaultOptions),
-
-  passwordError: () => toast.error("Ошибка при смене пароля", defaultOptions),
 };
 
 // Уведомления для финансовых операций
@@ -58,24 +43,8 @@ export const financeNotifications = {
   transactionCreated: (amount) =>
     toast.success(`Транзакция на ${amount} ₽ добавлена!`, defaultOptions),
 
-  transactionUpdated: () =>
-    toast.success("Транзакция обновлена!", defaultOptions),
-
   transactionDeleted: () =>
     toast.success("Транзакция удалена!", defaultOptions),
-
-  loadError: () => toast.error("Ошибка при загрузке данных", defaultOptions),
-
-  saveError: () => toast.error("Ошибка при сохранении", defaultOptions),
-
-  deleteError: () => toast.error("Ошибка при удалении", defaultOptions),
-
-  invalidAmount: () =>
-    toast.warning("Укажите корректную сумму", defaultOptions),
-
-  invalidDate: () => toast.warning("Укажите корректную дату", defaultOptions),
-
-  categoryRequired: () => toast.warning("Выберите категорию", defaultOptions),
 
   transactionError: (message) =>
     toast.error(message || "Ошибка при добавлении транзакции", defaultOptions),
@@ -97,18 +66,4 @@ export const generalNotifications = {
 
   serverError: () =>
     toast.error("Ошибка сервера. Попробуйте позже", defaultOptions),
-
-  validationError: (message) =>
-    toast.warning(
-      message || "Проверьте правильность заполнения полей",
-      defaultOptions
-    ),
-
-  loading: (message) =>
-    toast.loading(message || "Загрузка...", {
-      ...defaultOptions,
-      autoClose: false,
-    }),
-
-  dismiss: () => toast.dismiss(),
 };
