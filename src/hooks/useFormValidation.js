@@ -6,14 +6,20 @@ import { useState, useEffect } from "react";
  *
  * @param {Object} initialValues - Начальные значения полей формы
  * @param {Object} validators - Объект с функциями валидации для каждого поля
+ * @param {Object} validationMessages - Объект с сообщениями ошибок для каждого поля
  * @returns {Object} Состояние формы и методы для работы с ней
  */
-export const useFormValidation = (initialValues, validators) => {
+export const useFormValidation = (
+  initialValues,
+  validators,
+  validationMessages = {}
+) => {
   const [formData, setFormData] = useState(initialValues);
   const [fieldErrors, setFieldErrors] = useState({});
   const [fieldValid, setFieldValid] = useState({});
   const [touched, setTouched] = useState({});
   const [showError, setShowError] = useState(false);
+  const [allErrors, setAllErrors] = useState([]); // Новое состояние для всех ошибок
 
   // Инициализируем состояния на основе полей - только при изменении ключей
   useEffect(() => {
@@ -82,6 +88,7 @@ export const useFormValidation = (initialValues, validators) => {
    */
   const validateForm = () => {
     const fields = Object.keys(initialValues);
+    const validationErrors = []; // Массив для сбора всех ошибок
 
     // Отмечаем все поля как touched и валидируем
     const validationResults = fields.reduce(
@@ -92,6 +99,23 @@ export const useFormValidation = (initialValues, validators) => {
           const isValid = validators[field](formData[field]);
           acc.valid[field] = isValid;
           acc.errors[field] = !isValid;
+
+          // Если поле невалидно, добавляем ошибку в массив
+          if (!isValid) {
+            const errorMessage =
+              validationMessages[field] || `Неверное значение поля "${field}"`;
+            validationErrors.push(errorMessage);
+          }
+        } else {
+          // Для полей без валидатора проверяем только наличие значения
+          const hasValue = formData[field]?.trim();
+          if (!hasValue) {
+            const errorMessage =
+              validationMessages[field] ||
+              `Поле "${field}" обязательно для заполнения`;
+            validationErrors.push(errorMessage);
+            acc.errors[field] = true;
+          }
         }
 
         return acc;
@@ -102,6 +126,7 @@ export const useFormValidation = (initialValues, validators) => {
     setTouched(validationResults.touched);
     setFieldErrors(validationResults.errors);
     setFieldValid(validationResults.valid);
+    setAllErrors(validationErrors); // Сохраняем все ошибки
 
     // Проверяем валидность всей формы
     const isFormValid = fields.every((field) => {
@@ -163,6 +188,7 @@ export const useFormValidation = (initialValues, validators) => {
     touched,
     showError,
     isFormValid,
+    allErrors, // Возвращаем массив всех ошибок
     handleInputChange,
     handleInputBlur,
     validateForm,

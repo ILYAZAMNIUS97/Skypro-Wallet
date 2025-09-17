@@ -4,6 +4,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import { ROUTES } from "../../constants/routes";
 import { validateEmail, validatePassword } from "../../utils/validation";
 import { useFormValidation } from "../../hooks/useFormValidation";
+import { authNotifications } from "../../services/toastNotifications";
 import {
   LoginContainer,
   LoginBackground,
@@ -46,6 +47,15 @@ const LoginPage = () => {
     []
   );
 
+  // Сообщения об ошибках валидации
+  const validationMessages = useMemo(
+    () => ({
+      email: "Введите корректный email адрес",
+      password: "Пароль должен содержать минимум 6 символов",
+    }),
+    []
+  );
+
   // Используем универсальный хук для валидации
   const {
     formData,
@@ -54,16 +64,27 @@ const LoginPage = () => {
     touched,
     showError,
     isFormValid,
+    allErrors,
     handleInputChange,
     handleInputBlur,
     validateForm,
     setShowError,
-  } = useFormValidation(initialValues, validators);
+  } = useFormValidation(initialValues, validators, validationMessages);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!validateForm()) {
+      // Показываем все ошибки валидации если форма невалидна
+      if (allErrors.length > 0) {
+        if (allErrors.length === 1) {
+          authNotifications.loginError(allErrors[0]);
+        } else {
+          authNotifications.loginError(
+            `Исправьте следующие ошибки:\n• ${allErrors.join("\n• ")}`
+          );
+        }
+      }
       return;
     }
 

@@ -71,25 +71,31 @@ const ExpenseForm = ({ onSubmit }) => {
   };
 
   const validateForm = () => {
+    const errors = [];
+
+    // Собираем все ошибки валидации
     if (!formData.description.trim()) {
-      financeNotifications.validationError("Введите описание расхода");
-      return false;
+      errors.push("Введите описание расхода");
     }
     if (!formData.category) {
-      financeNotifications.validationError("Выберите категорию");
-      return false;
+      errors.push("Выберите категорию");
     }
     if (!formData.date) {
-      financeNotifications.validationError("Выберите дату");
-      return false;
+      errors.push("Выберите дату");
     }
     if (
       !formData.amount ||
       parseFloat(formData.amount.replace(/\s/g, "")) <= 0
     ) {
-      financeNotifications.validationError("Введите корректную сумму");
+      errors.push("Введите корректную сумму");
+    }
+
+    // Если есть ошибки, показываем их все сразу
+    if (errors.length > 0) {
+      financeNotifications.multipleValidationErrors(errors);
       return false;
     }
+
     return true;
   };
 

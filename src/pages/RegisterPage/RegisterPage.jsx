@@ -8,6 +8,7 @@ import {
   validateName,
 } from "../../utils/validation";
 import { useFormValidation } from "../../hooks/useFormValidation";
+import { authNotifications } from "../../services/toastNotifications";
 import {
   RegisterContainer,
   RegisterBackground,
@@ -53,6 +54,16 @@ const RegisterPage = () => {
     []
   );
 
+  // Сообщения об ошибках валидации
+  const validationMessages = useMemo(
+    () => ({
+      name: "Введите имя и фамилию (минимум 2 слова)",
+      email: "Введите корректный email адрес",
+      password: "Пароль должен содержать минимум 6 символов",
+    }),
+    []
+  );
+
   // Используем универсальный хук для валидации
   const {
     formData,
@@ -61,16 +72,27 @@ const RegisterPage = () => {
     touched,
     showError,
     isFormValid,
+    allErrors,
     handleInputChange,
     handleInputBlur,
     validateForm,
     setShowError,
-  } = useFormValidation(initialValues, validators);
+  } = useFormValidation(initialValues, validators, validationMessages);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!validateForm()) {
+      // Показываем все ошибки валидации если форма невалидна
+      if (allErrors.length > 0) {
+        if (allErrors.length === 1) {
+          authNotifications.registerError(allErrors[0]);
+        } else {
+          authNotifications.registerError(
+            `Исправьте следующие ошибки:\n• ${allErrors.join("\n• ")}`
+          );
+        }
+      }
       return;
     }
 

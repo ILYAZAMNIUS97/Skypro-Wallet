@@ -54,6 +54,22 @@ export const financeNotifications = {
       message || "Проверьте правильность заполнения полей",
       defaultOptions
     ),
+
+  // Новая функция для показа множественных ошибок валидации
+  multipleValidationErrors: (errors) => {
+    const errorMessage =
+      errors.length === 1
+        ? errors[0]
+        : `Исправьте следующие ошибки:\n• ${errors.join("\n• ")}`;
+
+    toast.warning(errorMessage, {
+      ...defaultOptions,
+      autoClose: 5000, // Увеличиваем время показа для множественных ошибок
+      style: {
+        whiteSpace: "pre-line", // Позволяет переносы строк
+      },
+    });
+  },
 };
 
 // Общие уведомления
