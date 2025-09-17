@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { Link } from "react-router-dom";
 
 export const RegisterContainer = styled.div`
   position: relative;
@@ -267,6 +268,18 @@ export const LoginLink = styled.div`
   }
 
   &:hover::after {
+    background: #7334ea;
+  }
+`;
+
+export const StyledLoginLink = styled(Link)`
+  text-decoration: none;
+
+  &:hover ${LoginLink} {
+    color: #7334ea;
+  }
+
+  &:hover ${LoginLink}::after {
     background: #7334ea;
   }
 `;

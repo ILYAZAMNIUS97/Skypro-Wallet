@@ -15,7 +15,7 @@ export const useFormValidation = (initialValues, validators) => {
   const [touched, setTouched] = useState({});
   const [showError, setShowError] = useState(false);
 
-  // Инициализируем состояния на основе полей
+  // Инициализируем состояния на основе полей - только при изменении ключей
   useEffect(() => {
     const initializeStates = () => {
       const fields = Object.keys(initialValues);
@@ -30,7 +30,7 @@ export const useFormValidation = (initialValues, validators) => {
     };
 
     initializeStates();
-  }, [initialValues]);
+  }, [JSON.stringify(Object.keys(initialValues))]);
 
   /**
    * Обработчик изменения значений в полях

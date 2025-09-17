@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import {
@@ -32,19 +32,25 @@ const RegisterPage = () => {
   const { register } = useAuth();
   const navigate = useNavigate();
 
-  // Начальные значения формы
-  const initialValues = {
-    name: "",
-    email: "",
-    password: "",
-  };
+  // Начальные значения формы - мемоизируем чтобы избежать лишних ререндеров
+  const initialValues = useMemo(
+    () => ({
+      name: "",
+      email: "",
+      password: "",
+    }),
+    []
+  );
 
-  // Валидаторы для полей
-  const validators = {
-    name: validateName,
-    email: validateEmail,
-    password: validatePassword,
-  };
+  // Валидаторы для полей - мемоизируем для стабильности
+  const validators = useMemo(
+    () => ({
+      name: validateName,
+      email: validateEmail,
+      password: validatePassword,
+    }),
+    []
+  );
 
   // Используем универсальный хук для валидации
   const {
@@ -177,9 +183,9 @@ const RegisterPage = () => {
 
         <LoginSection>
           <LoginText>Уже есть аккаунт?</LoginText>
-          <LoginLink as={Link} to="/login">
-            Войдите здесь
-          </LoginLink>
+          <Link to="/login">
+            <LoginLink>Войдите здесь</LoginLink>
+          </Link>
         </LoginSection>
       </RegisterForm>
     </RegisterContainer>

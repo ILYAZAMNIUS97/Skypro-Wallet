@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import { validateEmail, validatePassword } from "../../utils/validation";
@@ -27,17 +27,23 @@ const LoginPage = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  // Начальные значения формы
-  const initialValues = {
-    login: "",
-    password: "",
-  };
+  // Начальные значения формы - мемоизируем чтобы избежать лишних ререндеров
+  const initialValues = useMemo(
+    () => ({
+      email: "",
+      password: "",
+    }),
+    []
+  );
 
-  // Валидаторы для полей
-  const validators = {
-    login: validateEmail,
-    password: validatePassword,
-  };
+  // Валидаторы для полей - мемоизируем для стабильности
+  const validators = useMemo(
+    () => ({
+      email: validateEmail,
+      password: validatePassword,
+    }),
+    []
+  );
 
   // Используем универсальный хук для валидации
   const {
@@ -64,7 +70,12 @@ const LoginPage = () => {
     setShowError(false);
 
     try {
-      await login(formData);
+      // Преобразуем email в login для API
+      const loginData = {
+        login: formData.email,
+        password: formData.password,
+      };
+      await login(loginData);
       navigate("/");
     } catch (error) {
       console.error("Ошибка входа:", error);
@@ -91,19 +102,19 @@ const LoginPage = () => {
 
         <FormFields>
           <InputField
-            $hasError={fieldErrors.login && touched.login}
-            $isValid={fieldValid.login && touched.login}
+            $hasError={fieldErrors.email && touched.email}
+            $isValid={fieldValid.email && touched.email}
           >
             <Input
-              type="text"
-              name="login"
+              type="email"
+              name="email"
               placeholder="Эл. почта"
-              value={formData.login}
+              value={formData.email}
               onChange={handleInputChange}
               onBlur={handleInputBlur}
               disabled={isLoading}
             />
-            {fieldErrors.login && touched.login && <span>*</span>}
+            {fieldErrors.email && touched.email && <span>*</span>}
           </InputField>
 
           <InputField
@@ -123,9 +134,9 @@ const LoginPage = () => {
           </InputField>
 
           {(showError ||
-            (touched.login &&
+            (touched.email &&
               touched.password &&
-              (!fieldValid.login || !fieldValid.password))) && (
+              (!fieldValid.email || !fieldValid.password))) && (
             <ErrorMessage>
               Упс! Введенные вами данные некорректны. Введите данные корректно и
               повторите попытку.
@@ -143,9 +154,9 @@ const LoginPage = () => {
 
         <RegisterSection>
           <RegisterText>Нужно зарегистрироваться?</RegisterText>
-          <RegisterLink as={Link} to="/register">
-            Регистрируйтесь здесь
-          </RegisterLink>
+          <Link to="/register">
+            <RegisterLink>Регистрируйтесь здесь</RegisterLink>
+          </Link>
         </RegisterSection>
       </LoginForm>
     </LoginContainer>
