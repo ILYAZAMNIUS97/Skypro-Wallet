@@ -68,14 +68,14 @@ export const LogoImage = styled.img`
 export const LoginForm = styled.form`
   position: relative;
   width: calc(100% - 32px);
-  max-width: 320px;
+  max-width: 360px;
   background: #ffffff;
   border-radius: 20px;
   box-shadow: 0px 10px 30px -8px rgba(0, 0, 0, 0.1);
-  padding: 20px;
+  padding: 24px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 18px;
   z-index: 1;
   box-sizing: border-box;
   margin: 0 16px;
@@ -257,12 +257,20 @@ export const SubmitButton = styled.button`
     font-size: 12px;
   }
 
-  /* Активное состояние - фиолетовый фон с белым текстом */
-  background: #7334ea;
+  /* Активное состояние - на мобильных зеленый, на остальных фиолетовый */
+  background: #34c759;
   color: #ffffff;
 
   &:hover:not(:disabled) {
-    background: #5f2bc4;
+    background: #28a745;
+  }
+
+  ${media.tablet} {
+    background: #7334ea;
+
+    &:hover:not(:disabled) {
+      background: #5f2bc4;
+    }
   }
 
   /* Неактивное состояние - серый фон с белым текстом */
