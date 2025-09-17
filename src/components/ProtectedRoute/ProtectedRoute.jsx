@@ -1,16 +1,12 @@
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
-import Loader from "../Loader/Loader";
+import { ROUTES } from "../../constants/routes";
 
 function ProtectedRoute({ children }) {
-  const { isAuth, isLoading } = useAuth();
+  const { isAuth } = useAuth();
 
-  // Показываем загрузку пока проверяется авторизация
-  if (isLoading) {
-    return <Loader text="Проверка авторизации..." />;
-  }
-
-  return isAuth ? children : <Navigate to="/login" replace />;
+  // Если пользователь не авторизован, перенаправляем на страницу входа
+  return isAuth ? children : <Navigate to={ROUTES.LOGIN} replace />;
 }
 
 export default ProtectedRoute;

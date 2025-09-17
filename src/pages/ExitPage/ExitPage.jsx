@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
+import { ROUTES } from "../../constants/routes";
 import {
   PageWrapper,
   ExitContainer,
@@ -18,11 +19,11 @@ function ExitPage() {
 
   const handleExit = () => {
     logout();
-    navigate("/login");
+    navigate(ROUTES.LOGIN);
   };
 
   const handleCancel = () => {
-    navigate("/");
+    navigate(ROUTES.HOME);
   };
 
   return (

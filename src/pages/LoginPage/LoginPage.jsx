@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
+import { ROUTES } from "../../constants/routes";
 import { validateEmail, validatePassword } from "../../utils/validation";
 import { useFormValidation } from "../../hooks/useFormValidation";
 import {
@@ -76,7 +77,7 @@ const LoginPage = () => {
         password: formData.password,
       };
       await login(loginData);
-      navigate("/");
+      navigate(ROUTES.HOME);
     } catch (error) {
       console.error("Ошибка входа:", error);
       setShowError(true);
@@ -154,7 +155,7 @@ const LoginPage = () => {
 
         <RegisterSection>
           <RegisterText>Нужно зарегистрироваться?</RegisterText>
-          <Link to="/register">
+          <Link to={ROUTES.REGISTER}>
             <RegisterLink>Регистрируйтесь здесь</RegisterLink>
           </Link>
         </RegisterSection>

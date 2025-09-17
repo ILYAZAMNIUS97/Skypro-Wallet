@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
+import { ROUTES } from "../../constants/routes";
 import {
   validateEmail,
   validatePassword,
@@ -77,7 +78,7 @@ const RegisterPage = () => {
 
     try {
       await register(formData);
-      navigate("/");
+      navigate(ROUTES.HOME);
     } catch (error) {
       console.error("Ошибка регистрации:", error);
       setShowError(true);
@@ -183,7 +184,7 @@ const RegisterPage = () => {
 
         <LoginSection>
           <LoginText>Уже есть аккаунт?</LoginText>
-          <Link to="/login">
+          <Link to={ROUTES.LOGIN}>
             <LoginLink>Войдите здесь</LoginLink>
           </Link>
         </LoginSection>

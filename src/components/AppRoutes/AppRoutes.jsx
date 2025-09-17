@@ -6,17 +6,18 @@ import AnalyticsPage from "../../pages/AnalyticsPage/AnalyticsPage";
 import ExitPage from "../../pages/ExitPage/ExitPage";
 import NotFoundPage from "../../pages/NotFoundPage/NotFoundPage";
 import ProtectedRoute from "../ProtectedRoute/ProtectedRoute";
+import { ROUTES } from "../../constants/routes";
 
 function AppRoutes() {
   return (
     <Routes>
       {/* Публичные маршруты */}
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/register" element={<RegisterPage />} />
+      <Route path={ROUTES.LOGIN} element={<LoginPage />} />
+      <Route path={ROUTES.REGISTER} element={<RegisterPage />} />
 
       {/* Защищенные маршруты */}
       <Route
-        path="/"
+        path={ROUTES.HOME}
         element={
           <ProtectedRoute>
             <TransactionsPage />
@@ -24,7 +25,7 @@ function AppRoutes() {
         }
       />
       <Route
-        path="/transactions"
+        path={ROUTES.TRANSACTIONS}
         element={
           <ProtectedRoute>
             <TransactionsPage />
@@ -32,7 +33,7 @@ function AppRoutes() {
         }
       />
       <Route
-        path="/analytics"
+        path={ROUTES.ANALYTICS}
         element={
           <ProtectedRoute>
             <AnalyticsPage />
@@ -40,7 +41,7 @@ function AppRoutes() {
         }
       />
       <Route
-        path="/exit"
+        path={ROUTES.EXIT}
         element={
           <ProtectedRoute>
             <ExitPage />
@@ -49,7 +50,7 @@ function AppRoutes() {
       />
 
       {/* 404 страница */}
-      <Route path="*" element={<NotFoundPage />} />
+      <Route path={ROUTES.NOT_FOUND} element={<NotFoundPage />} />
     </Routes>
   );
 }
