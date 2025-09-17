@@ -14,7 +14,11 @@ import {
   CategoryIcon,
   SubmitButton,
 } from "./ExpenseForm.styled";
-import { formatMoneyInput, validateMoneyInput } from "../../utils/formatMoney";
+import {
+  formatMoneyInput,
+  validateMoneyInput,
+  formatMoney,
+} from "../../utils/formatMoney";
 import { transactionsApi } from "../../services/api";
 import { financeNotifications } from "../../services/toastNotifications";
 import { useAuth } from "../../contexts/AuthContext";
@@ -118,8 +122,8 @@ const ExpenseForm = ({ onSubmit }) => {
         transactionData
       );
 
-      // Показываем уведомление об успехе
-      financeNotifications.transactionCreated(formData.amount);
+      // Показываем уведомление об успехе с корректно отформатированной суммой
+      financeNotifications.transactionCreated(formatMoney(transactionData.sum));
 
       // Очищаем форму
       setFormData({

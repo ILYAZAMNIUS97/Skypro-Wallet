@@ -110,7 +110,7 @@ const RegisterPage = () => {
             <Input
               type="text"
               name="name"
-              placeholder="Ева Иванова"
+              placeholder="Ева Иван"
               value={formData.name}
               onChange={handleInputChange}
               onBlur={handleInputBlur}
@@ -131,7 +131,7 @@ const RegisterPage = () => {
             <Input
               type="email"
               name="email"
-              placeholder="ivanovaeva@mail.ru"
+              placeholder="Эл. почта"
               value={formData.email}
               onChange={handleInputChange}
               onBlur={handleInputBlur}

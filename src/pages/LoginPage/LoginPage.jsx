@@ -109,7 +109,7 @@ const LoginPage = () => {
             <Input
               type="email"
               name="email"
-              placeholder="Эл. почта"
+              placeholder="ivanova"
               value={formData.email}
               onChange={handleInputChange}
               onBlur={handleInputBlur}
