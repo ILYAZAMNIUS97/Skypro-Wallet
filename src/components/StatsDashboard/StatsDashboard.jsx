@@ -7,6 +7,7 @@ import {
   ExpenseAmount,
   ExpenseLabel,
   ChartContainer,
+  ChartWrapper,
   CategoryBar,
   CategoryLabel,
   CategoryAmount,
@@ -97,13 +98,15 @@ const StatsDashboard = ({ analyticsData, period, isLoading }) => {
       </ExpenseSummary>
 
       <ChartContainer>
-        {categories.map((category) => (
-          <div key={category.name}>
-            <CategoryAmount>{category.amount}</CategoryAmount>
-            <CategoryBar $color={category.color} $height={category.height} />
-            <CategoryLabel>{category.name}</CategoryLabel>
-          </div>
-        ))}
+        <ChartWrapper>
+          {categories.map((category) => (
+            <div key={category.name}>
+              <CategoryAmount>{category.amount}</CategoryAmount>
+              <CategoryBar $color={category.color} $height={category.height} />
+              <CategoryLabel>{category.name}</CategoryLabel>
+            </div>
+          ))}
+        </ChartWrapper>
       </ChartContainer>
     </StatsContainer>
   );

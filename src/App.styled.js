@@ -1,4 +1,5 @@
 import styled, { createGlobalStyle } from "styled-components";
+import { media, spacing } from "./utils/breakpoints";
 
 // Глобальные стили (перенесены из App.css)
 export const GlobalStyle = createGlobalStyle`
@@ -36,6 +37,22 @@ export const GlobalStyle = createGlobalStyle`
     font-family: "Montserrat", Arial, Helvetica, sans-serif;
     color: ${(props) => props.theme.text};
     background-color: ${(props) => props.theme.background};
+    font-size: 14px;
+    
+    ${media.tablet} {
+      font-size: 15px;
+    }
+    
+    ${media.laptop} {
+      font-size: 16px;
+    }
+  }
+
+  /* Улучшенные стили для мобильных устройств */
+  ${media.mobile} {
+    body {
+      overflow-x: hidden;
+    }
   }
 `;
 
@@ -44,7 +61,7 @@ export const Wrapper = styled.div`
   max-width: 100%;
   width: 100vw;
   min-height: 100vh;
-  overflow: hidden;
+  overflow-x: hidden;
   background-color: ${(props) => props.theme.background};
 `;
 
@@ -53,10 +70,17 @@ export const Container = styled.div`
   max-width: 1260px;
   width: 100%;
   margin: 0 auto;
-  padding: 0 30px;
+  padding: 0 ${spacing.mobile.container};
 
-  @media screen and (max-width: 495px) {
-    width: 100%;
-    padding: 0 16px;
+  ${media.tablet} {
+    padding: 0 ${spacing.tablet.container};
+  }
+
+  ${media.laptop} {
+    padding: 0 ${spacing.laptop.container};
+  }
+
+  ${media.desktop} {
+    padding: 0 ${spacing.desktop.container};
   }
 `;
