@@ -68,20 +68,3 @@ export const validateMoneyInput = (value) => {
 
   return true;
 };
-
-/**
- * Преобразует отформатированную сумму в числовое значение
- * @param {string} formattedValue - Отформатированная сумма
- * @returns {number} Числовое значение
- */
-export const parseMoneyValue = (formattedValue) => {
-  if (!formattedValue) return 0;
-
-  // Удаляем все кроме цифр, точек и запятых
-  const cleanValue = formattedValue.replace(/[^\d.,]/g, "");
-
-  // Заменяем запятую на точку
-  const normalizedValue = cleanValue.replace(",", ".");
-
-  return parseFloat(normalizedValue) || 0;
-};

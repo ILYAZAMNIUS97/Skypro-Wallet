@@ -16,30 +16,20 @@ export const categories = [
   { id: "others", name: "Другое", icon: "/images/icons/message-text.svg" },
 ];
 
-// Маппинг категорий для отображения на русском языке
-export const categoryDisplayNames = {
-  food: "Еда",
-  transport: "Транспорт",
-  housing: "Жилье",
-  joy: "Развлечения",
-  education: "Образование",
-  others: "Другое",
-};
-
 /**
  * Получение русского названия категории по ID
  * @param {string} categoryId - ID категории
  * @returns {string} Русское название категории
  */
 export const getCategoryDisplayName = (categoryId) => {
-  return categoryDisplayNames[categoryId] || categoryId || "Другое";
-};
+  const categoryDisplayNames = {
+    food: "Еда",
+    transport: "Транспорт",
+    housing: "Жилье",
+    joy: "Развлечения",
+    education: "Образование",
+    others: "Другое",
+  };
 
-/**
- * Получение категории по ID
- * @param {string} categoryId - ID категории
- * @returns {Object|null} Объект категории или null
- */
-export const getCategoryById = (categoryId) => {
-  return categories.find((cat) => cat.id === categoryId) || null;
+  return categoryDisplayNames[categoryId] || categoryId || "Другое";
 };
