@@ -41,7 +41,7 @@ export const authNotifications = {
 // Уведомления для финансовых операций
 export const financeNotifications = {
   transactionCreated: (amount) =>
-    toast.success(`Транзакция на ${amount} ₽ добавлена!`, defaultOptions),
+    toast.success(`Транзакция на ${amount} добавлена!`, defaultOptions),
 
   transactionDeleted: () =>
     toast.success("Транзакция удалена!", defaultOptions),
