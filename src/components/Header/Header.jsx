@@ -1,5 +1,6 @@
 import { useAuth } from "../../contexts/AuthContext";
 import { useNavigate, useLocation } from "react-router-dom";
+import { ROUTES } from "../../constants/routes";
 import {
   HeaderContainer,
   LogoContainer,
@@ -18,7 +19,7 @@ function Header() {
 
   const handleLogout = () => {
     logout();
-    navigate("/login");
+    navigate(ROUTES.LOGIN);
   };
 
   const handleNavigation = (path) => {
@@ -27,8 +28,9 @@ function Header() {
 
   // Определяем активную страницу
   const isExpensesActive =
-    location.pathname === "/" || location.pathname === "/transactions";
-  const isAnalyticsActive = location.pathname === "/analytics";
+    location.pathname === ROUTES.HOME ||
+    location.pathname === ROUTES.TRANSACTIONS;
+  const isAnalyticsActive = location.pathname === ROUTES.ANALYTICS;
 
   return (
     <HeaderContainer>
@@ -41,7 +43,7 @@ function Header() {
         <NavItem>
           <NavLink
             $isActive={isExpensesActive}
-            onClick={() => handleNavigation("/transactions")}
+            onClick={() => handleNavigation(ROUTES.TRANSACTIONS)}
           >
             Мои расходы
           </NavLink>
@@ -49,7 +51,7 @@ function Header() {
         <NavItem>
           <NavLink
             $isActive={isAnalyticsActive}
-            onClick={() => handleNavigation("/analytics")}
+            onClick={() => handleNavigation(ROUTES.ANALYTICS)}
           >
             Анализ расходов
           </NavLink>

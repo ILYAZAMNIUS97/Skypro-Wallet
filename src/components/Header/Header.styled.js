@@ -7,8 +7,25 @@ export const HeaderContainer = styled.header`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 120px;
+  padding: 0 20px;
   box-sizing: border-box;
+
+  /* Адаптивные отступы для разных экранов */
+  @media screen and (min-width: 768px) {
+    padding: 0 40px;
+  }
+
+  @media screen and (min-width: 1024px) {
+    padding: 0 60px;
+  }
+
+  @media screen and (min-width: 1200px) {
+    padding: 0 80px;
+  }
+
+  @media screen and (min-width: 1440px) {
+    padding: 0 120px;
+  }
 `;
 
 export const LogoContainer = styled.div`
@@ -20,6 +37,17 @@ export const LogoContainer = styled.div`
 export const LogoImage = styled.img`
   width: 143.68px;
   height: 19px;
+
+  /* Адаптивное масштабирование логотипа */
+  @media screen and (max-width: 768px) {
+    width: 120px;
+    height: 16px;
+  }
+
+  @media screen and (max-width: 480px) {
+    width: 100px;
+    height: 13px;
+  }
 `;
 
 export const LogoText = styled.span`
@@ -34,6 +62,19 @@ export const NavContainer = styled.nav`
   display: flex;
   align-items: center;
   gap: 48px;
+
+  /* Адаптивные отступы в навигации */
+  @media screen and (max-width: 1024px) {
+    gap: 32px;
+  }
+
+  @media screen and (max-width: 768px) {
+    gap: 24px;
+  }
+
+  @media screen and (max-width: 480px) {
+    gap: 16px;
+  }
 `;
 
 export const NavItem = styled.div`
@@ -52,6 +93,15 @@ export const NavLink = styled.a`
   cursor: pointer;
   position: relative;
   padding-bottom: 4px;
+
+  /* Адаптивный размер шрифта */
+  @media screen and (max-width: 768px) {
+    font-size: 13px;
+  }
+
+  @media screen and (max-width: 480px) {
+    font-size: 12px;
+  }
 
   &::after {
     content: "";
@@ -81,6 +131,15 @@ export const ExitButton = styled.button`
   border: none;
   cursor: pointer;
   padding: 0;
+
+  /* Адаптивный размер шрифта */
+  @media screen and (max-width: 768px) {
+    font-size: 13px;
+  }
+
+  @media screen and (max-width: 480px) {
+    font-size: 12px;
+  }
 
   &:hover {
     color: #7334ea;

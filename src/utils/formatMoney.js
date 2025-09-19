@@ -47,25 +47,6 @@ export const formatMoney = (value) => {
 };
 
 /**
- * Форматирует сумму для отображения с разделителями тысяч и символом рубля
- * @param {string|number} value - Значение для форматирования
- * @returns {string} Отформатированная сумма с символом рубля
- */
-export const formatMoneyDisplay = (value) => {
-  if (!value) return "";
-
-  const numericValue = parseFloat(value);
-  if (isNaN(numericValue)) return "";
-
-  return new Intl.NumberFormat("ru-RU", {
-    style: "currency",
-    currency: "RUB",
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(numericValue);
-};
-
-/**
  * Валидирует введенное значение суммы
  * @param {string} value - Значение для валидации
  * @returns {boolean} true если значение корректно
@@ -86,21 +67,4 @@ export const validateMoneyInput = (value) => {
   if (parts.length > 1 && parts[1].length > 2) return false;
 
   return true;
-};
-
-/**
- * Преобразует отформатированную сумму в числовое значение
- * @param {string} formattedValue - Отформатированная сумма
- * @returns {number} Числовое значение
- */
-export const parseMoneyValue = (formattedValue) => {
-  if (!formattedValue) return 0;
-
-  // Удаляем все кроме цифр, точек и запятых
-  const cleanValue = formattedValue.replace(/[^\d.,]/g, "");
-
-  // Заменяем запятую на точку
-  const normalizedValue = cleanValue.replace(",", ".");
-
-  return parseFloat(normalizedValue) || 0;
 };

@@ -1,6 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
+import { ROUTES } from "../../constants/routes";
+import { validateEmail, validatePassword } from "../../utils/validation";
+import { useFormValidation } from "../../hooks/useFormValidation";
+import { authNotifications } from "../../services/toastNotifications";
 import {
   LoginContainer,
   LoginBackground,
@@ -21,115 +25,66 @@ import {
 } from "./LoginPage.styled";
 
 const LoginPage = () => {
-  const [formData, setFormData] = useState({
-    login: "",
-    password: "",
-  });
   const [isLoading, setIsLoading] = useState(false);
-  const [fieldErrors, setFieldErrors] = useState({
-    login: false,
-    password: false,
-  });
-  const [fieldValid, setFieldValid] = useState({
-    login: false,
-    password: false,
-  });
-  const [showError, setShowError] = useState(false);
-  const [touched, setTouched] = useState({
-    login: false,
-    password: false,
-  });
-
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  // Функции валидации
-  const validateEmail = (email) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
+  // Начальные значения формы - мемоизируем чтобы избежать лишних ререндеров
+  const initialValues = useMemo(
+    () => ({
+      email: "",
+      password: "",
+    }),
+    []
+  );
 
-  const validatePassword = (password) => {
-    return password.length >= 6;
-  };
+  // Валидаторы для полей - мемоизируем для стабильности
+  const validators = useMemo(
+    () => ({
+      email: validateEmail,
+      password: validatePassword,
+    }),
+    []
+  );
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+  // Сообщения об ошибках валидации
+  const validationMessages = useMemo(
+    () => ({
+      email: "Введите корректный email адрес",
+      password: "Пароль должен содержать минимум 6 символов",
+    }),
+    []
+  );
 
-    // Валидация в реальном времени
-    let isValid = false;
-    let hasError = false;
-
-    switch (name) {
-      case "login":
-        isValid = validateEmail(value);
-        hasError = value.length > 0 && !isValid;
-        break;
-      case "password":
-        isValid = validatePassword(value);
-        hasError = value.length > 0 && !isValid;
-        break;
-    }
-
-    setFieldValid((prev) => ({
-      ...prev,
-      [name]: isValid,
-    }));
-
-    setFieldErrors((prev) => ({
-      ...prev,
-      [name]: hasError,
-    }));
-
-    // Не скрываем ошибку при вводе - только при успешной валидации всех полей
-  };
-
-  const handleInputBlur = (e) => {
-    const { name } = e.target;
-    setTouched((prev) => ({
-      ...prev,
-      [name]: true,
-    }));
-  };
+  // Используем универсальный хук для валидации
+  const {
+    formData,
+    fieldErrors,
+    fieldValid,
+    touched,
+    showError,
+    isFormValid,
+    allErrors,
+    handleInputChange,
+    handleInputBlur,
+    validateForm,
+    setShowError,
+  } = useFormValidation(initialValues, validators, validationMessages);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Отметить все поля как touched
-    setTouched({
-      login: true,
-      password: true,
-    });
-
-    // Проверка всех полей
-    const loginValid = validateEmail(formData.login);
-    const passwordValid = validatePassword(formData.password);
-
-    const newFieldErrors = {
-      login: !loginValid,
-      password: !passwordValid,
-    };
-
-    const newFieldValid = {
-      login: loginValid,
-      password: passwordValid,
-    };
-
-    setFieldErrors(newFieldErrors);
-    setFieldValid(newFieldValid);
-
-    // Если есть ошибки или пустые поля, показать сообщение
-    if (
-      !loginValid ||
-      !passwordValid ||
-      !formData.login.trim() ||
-      !formData.password.trim()
-    ) {
-      setShowError(true);
+    if (!validateForm()) {
+      // Показываем все ошибки валидации если форма невалидна
+      if (allErrors.length > 0) {
+        if (allErrors.length === 1) {
+          authNotifications.loginError(allErrors[0]);
+        } else {
+          authNotifications.loginError(
+            `Исправьте следующие ошибки:\n• ${allErrors.join("\n• ")}`
+          );
+        }
+      }
       return;
     }
 
@@ -137,8 +92,13 @@ const LoginPage = () => {
     setShowError(false);
 
     try {
-      await login(formData);
-      navigate("/");
+      // Преобразуем email в login для API
+      const loginData = {
+        login: formData.email,
+        password: formData.password,
+      };
+      await login(loginData);
+      navigate(ROUTES.HOME);
     } catch (error) {
       console.error("Ошибка входа:", error);
       setShowError(true);
@@ -146,20 +106,6 @@ const LoginPage = () => {
       setIsLoading(false);
     }
   };
-
-  // Проверка, активна ли кнопка
-  const isFormValid =
-    fieldValid.login &&
-    fieldValid.password &&
-    formData.login &&
-    formData.password;
-
-  // Скрыть ошибку когда форма становится валидной
-  useEffect(() => {
-    if (showError && isFormValid) {
-      setShowError(false);
-    }
-  }, [showError, isFormValid]);
 
   return (
     <LoginContainer>
@@ -178,19 +124,19 @@ const LoginPage = () => {
 
         <FormFields>
           <InputField
-            $hasError={fieldErrors.login && touched.login}
-            $isValid={fieldValid.login && touched.login}
+            $hasError={fieldErrors.email && touched.email}
+            $isValid={fieldValid.email && touched.email}
           >
             <Input
-              type="text"
-              name="login"
+              type="email"
+              name="email"
               placeholder="Эл. почта"
-              value={formData.login}
+              value={formData.email}
               onChange={handleInputChange}
               onBlur={handleInputBlur}
               disabled={isLoading}
             />
-            {fieldErrors.login && touched.login && <span>*</span>}
+            {fieldErrors.email && touched.email && <span>*</span>}
           </InputField>
 
           <InputField
@@ -210,9 +156,9 @@ const LoginPage = () => {
           </InputField>
 
           {(showError ||
-            (touched.login &&
+            (touched.email &&
               touched.password &&
-              (!fieldValid.login || !fieldValid.password))) && (
+              (!fieldValid.email || !fieldValid.password))) && (
             <ErrorMessage>
               Упс! Введенные вами данные некорректны. Введите данные корректно и
               повторите попытку.
@@ -230,9 +176,9 @@ const LoginPage = () => {
 
         <RegisterSection>
           <RegisterText>Нужно зарегистрироваться?</RegisterText>
-          <RegisterLink as={Link} to="/register">
-            Регистрируйтесь здесь
-          </RegisterLink>
+          <Link to={ROUTES.REGISTER}>
+            <RegisterLink>Регистрируйтесь здесь</RegisterLink>
+          </Link>
         </RegisterSection>
       </LoginForm>
     </LoginContainer>

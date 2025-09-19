@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { ROUTES } from "../../constants/routes";
 import {
   PageWrapper,
   NotFoundContainer,
@@ -21,7 +22,7 @@ function NotFoundPage() {
             <NotFoundText>
               Упс! Похоже, вы попали на страницу, которой не существует.
             </NotFoundText>
-            <NotFoundButton as={Link} to="/">
+            <NotFoundButton as={Link} to={ROUTES.HOME}>
               Вернуться на главную
             </NotFoundButton>
           </NotFoundContent>
